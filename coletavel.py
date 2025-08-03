@@ -5,10 +5,12 @@ from config import *
 
 # HERANÇA: classe mãe.
 # para itens colecionáveis
-class Coletavel:
+class Coletavel(pygame.sprite.Sprite):
 
     # algumas definições de fábrica
     def __init__(self):
+
+        super().__init__()
 
         # atualmente o coletável é um quadrado menor e vermelho
         self.image = pygame.Surface((30, 30))

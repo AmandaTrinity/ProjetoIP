@@ -12,3 +12,13 @@ vermelho = (255, 0, 0)
 branco = (255, 255, 255)
 amarelo = (255, 255, 0)
 verde = (0, 255, 0)
+cinza = (128, 128, 128)
+
+# MÁQUINA DE ESTADOS
+    # estado minigame
+    # estado explorando -> estado inicial
+
+# no main, usar if pra verificar qual é o estado atual
+
+ESTADO_EXPLORANDO = "explorando"
+ESTADO_MINIGAME_CIN = "minigame_cin"

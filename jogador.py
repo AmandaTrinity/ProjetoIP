@@ -3,9 +3,11 @@ from config import *
 
 # criando a classe JOGADOR -> molde
 
-class Jogador:
+class Jogador(pygame.sprite.Sprite):
 
     def __init__(self):
+
+        super().__init__() # inicialização da classe mae spite
 
         # imagem do jogador (quadrado azul?)
         self.image = pygame.Surface((50,50))
