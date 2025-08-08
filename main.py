@@ -2,6 +2,7 @@
 import pygame
 import sys
 import random
+import os
 
 # --- Configurações e Constantes ---
 # Cores
@@ -49,42 +50,94 @@ LAYOUT_LABIRINTO = [
 # --- Classes do Jogo ---
 
 class Professor(pygame.sprite.Sprite):
-    """Classe que representa o jogador."""
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((TAMANHO_BLOCO // 2, TAMANHO_BLOCO // 2))
-        self.image.fill(AMARELO)
+
+        # --- Lógica de Animação ---
+        diretorio_atual = os.path.dirname(__file__)
+        caminho_para_imagens = os.path.join(diretorio_atual, 'Imagens')
+
+        self.animacoes = {}
+        
+        try:
+            frames_normais = []
+            for i in range(4):
+                nome_do_arquivo = f"stefannormal_{i}.png"
+                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                
+                print(f"Tentando carregar: {caminho_completo}") 
+                
+                frame = pygame.image.load(caminho_completo).convert_alpha()
+                frame = pygame.transform.scale(frame, (40, 40))
+                frames_normais.append(frame)
+
+            self.animacoes['normal'] = frames_normais
+
+        except pygame.error:
+            # Caso as imagens não sejam encontradas
+            print(f"Erro ao carregar imagens: {i}")
+            print("Usando um quadrado amarelo como fallback.")
+
+            self.animacoes = {}
+            
+            fallback_surface = pygame.Surface((TAMANHO_BLOCO, int(TAMANHO_BLOCO * 1.5))) #Cria-se uma imagem fallback
+            fallback_surface.fill(AMARELO)
+            
+            # Coloca essa imagem dentro da mesma estrutura de dicionário e lista
+            self.animacoes['normal'] = [fallback_surface] # Uma lista com um único frame
+
+        self.estado_animacao = 'normal'
+        self.frame_atual = 0
+        self.image = self.animacoes[self.estado_animacao][self.frame_atual]
+
         self.rect = self.image.get_rect(center=(x, y))
+
+        # Atributos de controle da animação
+        self.animar_agora = False
+        self.tempo_animacao = 0
+        self.velocidade_animacao = 100 # ms entre frames
+
+        # Atributos do Jogo
         self.velocidade_base = 5
         self.velocidade = self.velocidade_base
         self.itens_coletados = []
-        
-        # Atributos dos power-ups
         self.invisivel = False
         self.tempo_boost = 0
         self.tempo_invisivel = 0
         self.drunk = False
         self.tempo_drunk = 0
 
+
     def mover(self, dx, dy, paredes):
-        """Move o personagem e checa colisão com as paredes de forma mais robusta."""
-        # Move no eixo X
+        # O método mover SÓ se preocupa com o movimento.
+        # Se o personagem se moveu (dx ou dy não são zero), ativamos a animação.
+        if dx != 0 or dy != 0:
+            self.animar_agora = True
+        else:
+            self.animar_agora = False
+
         self.rect.x += dx * self.velocidade
         for parede in paredes:
             if self.rect.colliderect(parede.rect):
                 if dx > 0: self.rect.right = parede.rect.left
                 if dx < 0: self.rect.left = parede.rect.right
         
-        # Move no eixo Y
         self.rect.y += dy * self.velocidade
         for parede in paredes:
             if self.rect.colliderect(parede.rect):
                 if dy > 0: self.rect.bottom = parede.rect.top
                 if dy < 0: self.rect.top = parede.rect.bottom
-    
+
     def update(self, tempo_atual):
-        """Atualiza o estado dos power-ups."""
-        # Efeito da Sombrinha de Frevo (velocidade)
+        if self.animar_agora:
+            # Verifica se já passou tempo suficiente para trocar o frame
+            if tempo_atual - self.tempo_animacao > self.velocidade_animacao:
+                self.tempo_animacao = tempo_atual # Reseta o contador
+                
+                self.frame_atual = (self.frame_atual + 1) % len(self.animacoes[self.estado_animacao])
+                
+                self.image = self.animacoes[self.estado_animacao][self.frame_atual]
+
         if self.tempo_boost > 0 and tempo_atual > self.tempo_boost:
             self.velocidade = self.velocidade_base
             self.tempo_boost = 0
