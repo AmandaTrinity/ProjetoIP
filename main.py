@@ -105,6 +105,7 @@ class Professor(pygame.sprite.Sprite):
         self.image = self.parado['normal '+self.direcao]
         self.frame_atual = 0
         self.rect = self.image.get_rect(center=(x, y))
+        self.mask = pygame.mask.from_surface(self.image) #Para aplicar a lógica de colisões pixel com pixel
 
         # Atributos de controle da animação
         self.animar_agora = False
@@ -138,13 +139,13 @@ class Professor(pygame.sprite.Sprite):
 
         self.rect.x += dx * self.velocidade
         for parede in paredes:
-            if self.rect.colliderect(parede.rect):
+            if pygame.sprite.collide_mask(self, parede):
                 if dx > 0: self.rect.right = parede.rect.left
                 if dx < 0: self.rect.left = parede.rect.right
         
         self.rect.y += dy * self.velocidade
         for parede in paredes:
-            if self.rect.colliderect(parede.rect):
+            if pygame.sprite.collide_mask(self, parede):
                 if dy > 0: self.rect.bottom = parede.rect.top
                 if dy < 0: self.rect.top = parede.rect.bottom
 
@@ -160,8 +161,10 @@ class Professor(pygame.sprite.Sprite):
                 self.frame_atual = (self.frame_atual + 1) % len(lista_de_frames_atual)
                 
                 self.image = lista_de_frames_atual[self.frame_atual]
+                self.mask = pygame.mask.from_surface(self.image)
         else:
             #Foi definida um novo atributo para quando estiver parado, então se não estivera animando agora, está parado.
+            self.image = self.parado[estado_animacao_atual]
             self.image = self.parado[estado_animacao_atual]
             self.frame_atual = 0 #Reseta para o primeiro frame
 
@@ -197,6 +200,7 @@ class Aluno(pygame.sprite.Sprite):
         self.image = pygame.Surface((TAMANHO_BLOCO - 10, TAMANHO_BLOCO - 10))
         self.image.fill(CIANO)
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.mask = pygame.mask.from_surface(self.image) #Também precisa colocar máscara nos obstáculos e afins
         self.direcao = 1
         self.movimento_range = 120 # O quanto ele se move para frente e para trás
         self.pos_inicial_y = y
@@ -215,6 +219,7 @@ class Item(pygame.sprite.Sprite):
         self.image = pygame.Surface((TAMANHO_BLOCO // 2, TAMANHO_BLOCO // 2))
         self.image.fill(cor)
         self.rect = self.image.get_rect(center=pos)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def aplicar_efeito(self, professor):
         """Método a ser sobrescrito por cada item."""
@@ -255,6 +260,7 @@ class Parede(pygame.sprite.Sprite):
         self.image = pygame.Surface((TAMANHO_BLOCO, TAMANHO_BLOCO))
         self.image.fill(AZUL_CIN)
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.mask = pygame.mask.from_surface(self.image) #Para não empacar nas paredes, o contato será somente com pixel direto
 
 # --- Funções Auxiliares ---
 
@@ -420,13 +426,13 @@ def main():
             alunos.update()
             
             # Colisão com itens
-            itens_colididos = pygame.sprite.spritecollide(professor, itens, False)
+            itens_colididos = pygame.sprite.spritecollide(professor, itens, False, pygame.sprite.collide_mask) #Alteração aqui para colidir por pixel
             for item in itens_colididos:
                 professor.coletar_item(item)
 
             # Colisão com alunos
             if not professor.invisivel:
-                if pygame.sprite.spritecollide(professor, alunos, False):
+                if pygame.sprite.spritecollide(professor, alunos, False, pygame.sprite.collide_mask):
                     tempo_inicio_jogo -= 2000 # Penalidade: perde 2 segundos
                     # Empurra o professor para uma posição segura
                     professor.rect.x -= dx * 10
