@@ -2,6 +2,7 @@
 import pygame
 import sys
 import random
+import os
 
 # --- Configurações e Constantes ---
 # Cores
@@ -45,6 +46,11 @@ LAYOUT_LABIRINTO = [
     "PCCCCCPCCCCCPCCCCCCP",
     "PPPPPPPPPPPPPPPPPPPP",
 ]
+
+# Diretórios 
+diretorio_principal = os.path.dirname(__file__)
+diretorio_imagens = os.path.join(diretorio_principal, 'sprites')
+diretorio_sons = os.path.join(diretorio_principal, 'sons')
 
 # --- Classes do Jogo ---
 
@@ -129,12 +135,30 @@ class Aluno(pygame.sprite.Sprite):
 
 class Item(pygame.sprite.Sprite):
     """Classe base para todos os itens coletáveis."""
-    def __init__(self, nome, cor, pos):
+    def __init__(self, nome, pos, imagens, n_sprites, largura, altura, nova_largura=None, nova_altura=None):
         super().__init__()
         self.nome = nome
         self.image = pygame.Surface((TAMANHO_BLOCO // 2, TAMANHO_BLOCO // 2))
-        self.image.fill(cor)
         self.rect = self.image.get_rect(center=pos)
+        sprite_sheet = pygame.image.load(os.path.join(diretorio_imagens, imagens)).convert_alpha()
+        self.lista_sprites = []
+        for i in range(n_sprites): # número de sprites
+            sprite = sprite_sheet.subsurface((i * largura, 0), (largura, altura))
+            if nova_altura != None and nova_largura != None:
+                sprite = pygame.transform.scale(sprite, (nova_largura, nova_altura))
+            self.lista_sprites.append(sprite)
+
+        self.index_lista = 0
+
+        # substituindo imagem placeholder
+        self.image = self.lista_sprites[self.index_lista]
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+    def update(self):
+        self.index_lista += 0.15
+        if self.index_lista >= len(self.lista_sprites):
+            self.index_lista = 0
+        self.image = self.lista_sprites[int(self.index_lista)]
 
     def aplicar_efeito(self, professor):
         """Método a ser sobrescrito por cada item."""
@@ -142,8 +166,8 @@ class Item(pygame.sprite.Sprite):
 
 class SombrinhaFrevo(Item):
     def __init__(self, pos):
-        super().__init__("Sombrinha de Frevo", VERMELHO, pos)
-
+        super().__init__("Sombrinha de Frevo", pos, 'sprite_sheetsombrinha.png', 3, 26, 26)
+        
     def aplicar_efeito(self, professor):
         super().aplicar_efeito(professor)
         professor.velocidade = professor.velocidade_base * 2
@@ -151,16 +175,16 @@ class SombrinhaFrevo(Item):
 
 class GarrafaPitu(Item):
     def __init__(self, pos):
-        super().__init__("Garrafa de Pitú", VERDE, pos)
+        super().__init__("Garrafa de Pitú", pos, 'pitu.png', 2, 60, 190, 10, 32)
 
     def aplicar_efeito(self, professor):
         super().aplicar_efeito(professor)
         professor.drunk = True
         professor.tempo_drunk = pygame.time.get_ticks() + 7000 # 7 segundos de tontura
 
-class MascaraCarnaval(Item):
+class FantasiaCarnaval(Item):
     def __init__(self, pos):
-        super().__init__("Máscara de Carnaval", ROXO, pos)
+        super().__init__("Máscara de Carnaval", pos, 'FantasiaVampiro 19x25.png', 1, 19, 25)
 
     def aplicar_efeito(self, professor):
         super().aplicar_efeito(professor)
@@ -294,7 +318,7 @@ def main():
                         itens = pygame.sprite.Group()
                         if len(pos_itens) > 0: itens.add(SombrinhaFrevo(pos_itens[0]))
                         if len(pos_itens) > 1: itens.add(GarrafaPitu(pos_itens[1]))
-                        if len(pos_itens) > 2: itens.add(MascaraCarnaval(pos_itens[2]))
+                        if len(pos_itens) > 2: itens.add(FantasiaCarnaval(pos_itens[2]))
                         
                         todos_sprites = pygame.sprite.Group(professor)
                         
@@ -338,6 +362,7 @@ def main():
             # --- Lógica de Atualização ---
             professor.update(tempo_atual)
             alunos.update()
+            itens.update()
             
             # Colisão com itens
             itens_colididos = pygame.sprite.spritecollide(professor, itens, False)
