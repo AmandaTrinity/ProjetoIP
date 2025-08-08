@@ -58,38 +58,52 @@ class Professor(pygame.sprite.Sprite):
         caminho_para_imagens = os.path.join(diretorio_atual, 'Imagens')
 
         self.animacoes = {}
-        
+        self.parado = {}
         try:
-            frames_normais = []
+            frames_normais_direita = [] #Adiciona imagens andando para direita
             for i in range(4):
-                nome_do_arquivo = f"stefannormal_{i}.png"
+                nome_do_arquivo = f"stefan_direita{i}.png"
                 caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
                 
                 print(f"Tentando carregar: {caminho_completo}") 
                 
-                frame = pygame.image.load(caminho_completo).convert_alpha()
-                frame = pygame.transform.scale(frame, (40, 40))
-                frames_normais.append(frame)
+                frame_direita = pygame.image.load(caminho_completo).convert_alpha()
+                frame_direita = pygame.transform.scale(frame_direita, (40, 40))
+                frames_normais_direita.append(frame_direita)
 
-            self.animacoes['normal'] = frames_normais
+            self.animacoes['normal direita'] = frames_normais_direita
+            frames_normais_esquerda = []
+            for i in range(4): #Adiciona imagens andando para esquerda
+                nome_do_arquivo = f"stefan_esquerda{i}.png"
+                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                
+                print(f"Tentando carregar: {caminho_completo}") 
+                
+                frame_esquerda = pygame.image.load(caminho_completo).convert_alpha()
+                frame_esquerda = pygame.transform.scale(frame_esquerda, (40, 40))
+                frames_normais_esquerda.append(frame_esquerda)
 
+            self.animacoes['normal esquerda'] = frames_normais_esquerda
+            self.parado = {'normal direita': self.animacoes['normal direita'][0], 'normal esquerda': self.animacoes['normal esquerda'][0]}
+
+            
         except pygame.error:
             # Caso as imagens não sejam encontradas
             print(f"Erro ao carregar imagens: {i}")
             print("Usando um quadrado amarelo como fallback.")
-
-            self.animacoes = {}
             
             fallback_surface = pygame.Surface((TAMANHO_BLOCO, int(TAMANHO_BLOCO * 1.5))) #Cria-se uma imagem fallback
             fallback_surface.fill(AMARELO)
             
             # Coloca essa imagem dentro da mesma estrutura de dicionário e lista
-            self.animacoes['normal'] = [fallback_surface] # Uma lista com um único frame
+            self.animacoes['normal esquerda'] = [fallback_surface] # Uma lista com um único frame
+            self.animacoes['normal direita'] = [fallback_surface]
+            self.parado['normal esquerda'] = [fallback_surface]
+            self.parado['normal direita'] = [fallback_surface]
 
-        self.estado_animacao = 'normal'
+        self.direcao='direita' #Inicia olhando para direita
+        self.image = self.parado['normal '+self.direcao]
         self.frame_atual = 0
-        self.image = self.animacoes[self.estado_animacao][self.frame_atual]
-
         self.rect = self.image.get_rect(center=(x, y))
 
         # Atributos de controle da animação
@@ -116,6 +130,12 @@ class Professor(pygame.sprite.Sprite):
         else:
             self.animar_agora = False
 
+        #Lógica de direção
+        if dx>0:
+            self.direcao='direita'
+        elif dx<0:
+            self.direcao='esquerda'
+
         self.rect.x += dx * self.velocidade
         for parede in paredes:
             if self.rect.colliderect(parede.rect):
@@ -129,14 +149,21 @@ class Professor(pygame.sprite.Sprite):
                 if dy < 0: self.rect.top = parede.rect.bottom
 
     def update(self, tempo_atual):
+        estado_animacao_atual='normal ' + self.direcao
         if self.animar_agora:
             # Verifica se já passou tempo suficiente para trocar o frame
             if tempo_atual - self.tempo_animacao > self.velocidade_animacao:
                 self.tempo_animacao = tempo_atual # Reseta o contador
                 
-                self.frame_atual = (self.frame_atual + 1) % len(self.animacoes[self.estado_animacao])
+                #Adicionado para animar para esquerda e para direita
+                lista_de_frames_atual=self.animacoes[estado_animacao_atual]
+                self.frame_atual = (self.frame_atual + 1) % len(lista_de_frames_atual)
                 
-                self.image = self.animacoes[self.estado_animacao][self.frame_atual]
+                self.image = lista_de_frames_atual[self.frame_atual]
+        else:
+            #Foi definida um novo atributo para quando estiver parado, então se não estivera animando agora, está parado.
+            self.image = self.parado[estado_animacao_atual]
+            self.frame_atual = 0 #Reseta para o primeiro frame
 
         if self.tempo_boost > 0 and tempo_atual > self.tempo_boost:
             self.velocidade = self.velocidade_base
