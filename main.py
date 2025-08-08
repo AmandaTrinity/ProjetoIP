@@ -85,6 +85,34 @@ class Professor(pygame.sprite.Sprite):
 
             self.animacoes['normal esquerda'] = frames_normais_esquerda
             self.parado = {'normal direita': self.animacoes['normal direita'][0], 'normal esquerda': self.animacoes['normal esquerda'][0]}
+            
+            #Carregar imagens fantasiados
+            vampiro_direita_lista=[]
+            for i in range(4):
+                nome_do_arquivo = f"stefanvampiro_direita{i}.png"
+                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                
+                print(f"Tentando carregar: {caminho_completo}") 
+                
+                vampiro_direita = pygame.image.load(caminho_completo).convert_alpha()
+                vampiro_direita = pygame.transform.scale(vampiro_direita, (40, 40))
+                vampiro_direita_lista.append(vampiro_direita)
+            self.animacoes['vampiro direita'] = vampiro_direita_lista
+
+            vampiro_esquerda_lista=[]
+            for i in range(4):
+                nome_do_arquivo = f"stefanvampiroesqueda_{i}.png"
+                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                
+                print(f"Tentando carregar: {caminho_completo}") 
+                
+                vampiro_esquerda = pygame.image.load(caminho_completo).convert_alpha()
+                vampiro_esquerda = pygame.transform.scale(vampiro_esquerda, (40, 40))
+                vampiro_esquerda_lista.append(vampiro_esquerda)
+
+            self.animacoes['vampiro esquerda'] = vampiro_esquerda_lista
+            self.parado['vampiro direita'] = self.animacoes['vampiro direita'][0]
+            self.parado['vampiro esquerda'] = self.animacoes['vampiro esquerda'][0]
 
             
         except pygame.error:
@@ -101,8 +129,9 @@ class Professor(pygame.sprite.Sprite):
             self.parado['normal esquerda'] = [fallback_surface]
             self.parado['normal direita'] = [fallback_surface]
 
+        self.tipo = 'normal ' #pra definir se é fantasiado ou não, começa normal
         self.direcao='direita' #Inicia olhando para direita
-        self.image = self.parado['normal '+self.direcao]
+        self.image = self.parado[self.tipo + self.direcao]
         self.frame_atual = 0
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image) #Para aplicar a lógica de colisões pixel com pixel
@@ -150,7 +179,7 @@ class Professor(pygame.sprite.Sprite):
                 if dy < 0: self.rect.top = parede.rect.bottom
 
     def update(self, tempo_atual):
-        estado_animacao_atual='normal ' + self.direcao
+        estado_animacao_atual=self.tipo + self.direcao
         if self.animar_agora:
             # Verifica se já passou tempo suficiente para trocar o frame
             if tempo_atual - self.tempo_animacao > self.velocidade_animacao:
@@ -249,6 +278,7 @@ class MascaraCarnaval(Item):
 
     def aplicar_efeito(self, professor):
         super().aplicar_efeito(professor)
+        professor.tipo = 'vampiro ' #troca a fantasia
         professor.invisivel = True
         professor.tempo_invisivel = pygame.time.get_ticks() + 8000 # 8 segundos de invisibilidade
         professor.image.set_alpha(128) # Fica semitransparente
