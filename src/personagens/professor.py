@@ -1,7 +1,7 @@
 import pygame
 import os
-from src.utils.constantes import *
-from src.utils.audio import *
+from src.utils.constantes import IMAGENS_DIR, TAMANHO_BLOCO, AMARELO
+from src.utils.audio import som_andando
 
 class Professor(pygame.sprite.Sprite):
     def __init__(self, x, y):

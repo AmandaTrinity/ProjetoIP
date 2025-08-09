@@ -1,6 +1,6 @@
 import pygame
 import os
-from src.utils.constantes import *
+from src.utils.constantes import IMAGENS_DIR, TAMANHO_BLOCO, CIANO
 
 class Aluno(pygame.sprite.Sprite):
     """Classe para os obstáculos que se movem."""
