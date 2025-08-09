@@ -4,26 +4,17 @@ import random
 import os
 from src.utils.constantes import *
 from src.utils.audio import *
+from src.utils.desenho import desenhar_texto
 from src.personagens.professor import Professor
 from src.personagens.aluno import Aluno
 from src.coletaveis.sombrinha import SombrinhaFrevo
 from src.coletaveis.garrafaPitu import GarrafaPitu
 from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
-from src.labirinto.parede import Parede
+from src.labirinto.labirinto import Parede
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # --- Funções Auxiliares ---
-
-def desenhar_texto(texto, fonte, cor, superficie, x, y, centro=False):
-    """Função para desenhar texto na tela."""
-    objeto_texto = fonte.render(texto, True, cor)
-    rect_texto = objeto_texto.get_rect()
-    if centro:
-        rect_texto.center = (x, y)
-    else:
-        rect_texto.topleft = (x, y)
-    superficie.blit(objeto_texto, rect_texto)
 
 def encontrar_posicoes_acessiveis(layout, inicio_i, inicio_j):
     """Encontra todas as posições acessíveis a partir de um ponto inicial usando BFS."""
