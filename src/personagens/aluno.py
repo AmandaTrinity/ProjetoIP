@@ -16,7 +16,6 @@ class Aluno(pygame.sprite.Sprite):
             for i in range(4):
                 nome_do_arquivo = f"laursafrente_{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                print(f"Tentando carregar: {caminho_completo}") 
                 laursa_descendo = pygame.image.load(caminho_completo).convert_alpha()
                 laursa_descendo = pygame.transform.scale(laursa_descendo, (40, 40))
                 laursa_descendo_lista.append(laursa_descendo)
@@ -26,7 +25,6 @@ class Aluno(pygame.sprite.Sprite):
             for i in range(4): #Carrega animação descendo
                 nome_do_arquivo = f"laursasubindo_{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                print(f"Tentando carregar: {caminho_completo}") 
                 laursa_subindo = pygame.image.load(caminho_completo).convert_alpha()
                 laursa_subindo = pygame.transform.scale(laursa_subindo, (40, 40))
                 laursa_subindo_lista.append(laursa_subindo)

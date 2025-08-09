@@ -15,9 +15,7 @@ class Professor(pygame.sprite.Sprite):
             for i in range(4):
                 nome_do_arquivo = f"stefan_direita{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                
-                print(f"Tentando carregar: {caminho_completo}") 
-                
+                                
                 frame_direita = pygame.image.load(caminho_completo).convert_alpha()
                 frame_direita = pygame.transform.scale(frame_direita, (40, 40))
                 frames_normais_direita.append(frame_direita)
@@ -42,9 +40,7 @@ class Professor(pygame.sprite.Sprite):
             for i in range(4):
                 nome_do_arquivo = f"stefanvampiro_direita{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                
-                print(f"Tentando carregar: {caminho_completo}") 
-                
+                                
                 vampiro_direita = pygame.image.load(caminho_completo).convert_alpha()
                 vampiro_direita = pygame.transform.scale(vampiro_direita, (40, 40))
                 vampiro_direita_lista.append(vampiro_direita)
@@ -54,9 +50,7 @@ class Professor(pygame.sprite.Sprite):
             for i in range(4):
                 nome_do_arquivo = f"stefanvampiroesqueda_{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                
-                print(f"Tentando carregar: {caminho_completo}") 
-                
+                                
                 vampiro_esquerda = pygame.image.load(caminho_completo).convert_alpha()
                 vampiro_esquerda = pygame.transform.scale(vampiro_esquerda, (40, 40))
                 vampiro_esquerda_lista.append(vampiro_esquerda)
