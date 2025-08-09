@@ -1,81 +1,12 @@
-# -*- coding: utf-8 -*-
 import pygame
 import sys
 import random
 import os
+from src.utils.constantes import *
+from src.utils.audio import *
 
-pygame.init()
-pygame.mixer.init()
-# --- Configurações e Constantes ---
-# Cores
-PRETO = (0, 0, 0)
-BRANCO = (255, 255, 255)
-AZUL_CIN = (50, 100, 150)
-AMARELO = (255, 255, 0)
-VERDE = (0, 255, 0)
-VERMELHO = (255, 0, 0)
-ROXO = (128, 0, 128)
-LARANJA = (255, 165, 0)
-CIANO = (0, 255, 255)
-AZUL_CLARO_ENTRADA = (173, 216, 230) # Cor para a entrada
-CINZA = (128,128,128)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Tela
-LARGURA_TELA = 800
-ALTURA_TELA = 600
-TAMANHO_BLOCO = 40
-
-# Jogo
-TITULO_JOGO = "Jornada para o Carnaval"
-FPS = 30
-TEMPO_TOTAL_JOGO = 60  # em segundos
-
-# --- Estrutura do Labirinto ---
-# 'P' = Parede, 'C' = Corredor, 'E' = Entrada, 'S' = Saída
-LAYOUT_LABIRINTO = [
-    "PPPPPPPPPPPPPPPPPPPP",
-    "PECCCCCCCCPCCCCCCSPP",
-    "PCPPPPPCCPCPPCPPPCPP",
-    "PCCCPCCCCCPCPCCCCCCP",
-    "PPCPPPCPPPCPPPCPPPCP",
-    "PCPCCCCCPCCCCCPCCCCP",
-    "PCPPPCPCPPPCPCPPPCPP",
-    "PCCCCPCCCCPCPCCCCCCP",
-    "PCPPPCPPPCPCPPPCPCPP",
-    "PCPCCCCCPCCCCCPCCCCP",
-    "PCPPPCPCPPPCPCPPPCPP",
-    "PCCCPCCCCCPCCCCCCPCP",
-    "PPPPPCPPPCPPPCPCPCPP",
-    "PCCCCCPCCCCCPCCCCCCP",
-    "PPPPPPPPPPPPPPPPPPPP",
-]
-
-# Diretórios 
-diretorio_principal = os.path.dirname(__file__)
-diretorio_imagens = os.path.join(diretorio_principal, 'sprites')
-diretorio_sons = os.path.join(diretorio_principal, 'sons')
-
-#Carregando músicas
-som_inicio = pygame.mixer.Sound(os.path.join(diretorio_sons, 'musica_inicio.mp3'))
-som_inicio.set_volume(0.7)
-
-som_jogo = pygame.mixer.Sound(os.path.join(diretorio_sons, 'musica_jogo.mp3'))
-som_jogo.set_volume(0.4)
-
-try:
-    som_andando = pygame.mixer.Sound(os.path.join(diretorio_sons, 'andando.mp3'))
-    som_andando.set_volume(1.0)
-
-    som_sombrinha = pygame.mixer.Sound(os.path.join(diretorio_sons, 'som_sombrinha.wav'))
-    som_sombrinha.set_volume(0.8)
-    print("Efeitos sonoros carregados")
-except pygame.error as e:
-    print("Erro ao carregar efeitos sonoros: {e}.")
-    class SomFalso: #Cria sons falsos, apenas para o jogo não quebrar
-        def play(self): pass
-        def stop(self): pass
-    som_andando = SomFalso()
-    som_sombrinha = SomFalso ()
 # --- Classes do Jogo ---
 
 class Professor(pygame.sprite.Sprite):
@@ -83,16 +14,13 @@ class Professor(pygame.sprite.Sprite):
         super().__init__()
 
         # --- Lógica de Animação ---
-        diretorio_atual = os.path.dirname(__file__)
-        caminho_para_imagens = os.path.join(diretorio_atual, 'Imagens')
-
         self.animacoes = {}
         self.parado = {}
         try:
             frames_normais_direita = [] #Adiciona imagens andando para direita
             for i in range(4):
                 nome_do_arquivo = f"stefan_direita{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 
                 print(f"Tentando carregar: {caminho_completo}") 
                 
@@ -104,7 +32,7 @@ class Professor(pygame.sprite.Sprite):
             frames_normais_esquerda = []
             for i in range(4): #Adiciona imagens andando para esquerda
                 nome_do_arquivo = f"stefan_esquerda{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 
                 print(f"Tentando carregar: {caminho_completo}") 
                 
@@ -119,7 +47,7 @@ class Professor(pygame.sprite.Sprite):
             vampiro_direita_lista=[]
             for i in range(4):
                 nome_do_arquivo = f"stefanvampiro_direita{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 
                 print(f"Tentando carregar: {caminho_completo}") 
                 
@@ -131,7 +59,7 @@ class Professor(pygame.sprite.Sprite):
             vampiro_esquerda_lista=[]
             for i in range(4):
                 nome_do_arquivo = f"stefanvampiroesqueda_{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 
                 print(f"Tentando carregar: {caminho_completo}") 
                 
@@ -271,12 +199,10 @@ class Aluno(pygame.sprite.Sprite):
 
         self.animacoes = {}
         try:
-            caminho_para_imagens = os.path.join(os.path.dirname(__file__), 'Imagens')
-            
             laursa_descendo_lista = [] #Carrega animação descendo
             for i in range(4):
                 nome_do_arquivo = f"laursafrente_{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 print(f"Tentando carregar: {caminho_completo}") 
                 laursa_descendo = pygame.image.load(caminho_completo).convert_alpha()
                 laursa_descendo = pygame.transform.scale(laursa_descendo, (40, 40))
@@ -286,7 +212,7 @@ class Aluno(pygame.sprite.Sprite):
             laursa_subindo_lista = []
             for i in range(4): #Carrega animação descendo
                 nome_do_arquivo = f"laursasubindo_{i}.png"
-                caminho_completo = os.path.join(caminho_para_imagens, nome_do_arquivo)
+                caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
                 print(f"Tentando carregar: {caminho_completo}") 
                 laursa_subindo = pygame.image.load(caminho_completo).convert_alpha()
                 laursa_subindo = pygame.transform.scale(laursa_subindo, (40, 40))
@@ -339,7 +265,7 @@ class Item(pygame.sprite.Sprite):
         self.nome = nome
         self.image = pygame.Surface((TAMANHO_BLOCO // 2, TAMANHO_BLOCO // 2))
         self.rect = self.image.get_rect(center=pos)
-        sprite_sheet = pygame.image.load(os.path.join(diretorio_imagens, imagens)).convert_alpha()
+        sprite_sheet = pygame.image.load(os.path.join(SPRITES_DIR, imagens)).convert_alpha()
         self.lista_sprites = []
         for i in range(n_sprites): # número de sprites
             sprite = sprite_sheet.subsurface((i * largura, 0), (largura, altura))
@@ -480,14 +406,14 @@ def main():
     relogio = pygame.time.Clock()
 
     # criação da lista das sprite_sheets dos telhados
-    ss_telhados = pygame.image.load(os.path.join(diretorio_imagens, 'telhadoscoloridos.png')).convert()
+    ss_telhados = pygame.image.load(os.path.join(SPRITES_DIR, 'telhadoscoloridos.png')).convert()
     lista_telhados = []
     for i in range(8): # número de telhados de cores diferentes
         img_t = ss_telhados.subsurface((i * 40, 0), (40, 40))
         lista_telhados.append(img_t)
     # carregar imagem do chão
     try:
-        caminho_fundo = os.path.join(diretorio_imagens, 'chãojogo.jpg')
+        caminho_fundo = os.path.join(SPRITES_DIR, 'chãojogo.jpg')
         fundo_img=pygame.image.load(caminho_fundo).convert()
 
         fundo_img = pygame.transform.scale(fundo_img, (LARGURA_TELA, ALTURA_TELA))
