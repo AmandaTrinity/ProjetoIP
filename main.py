@@ -4,6 +4,8 @@ import sys
 import random
 import os
 
+pygame.init()
+pygame.mixer.init()
 # --- Configurações e Constantes ---
 # Cores
 PRETO = (0, 0, 0)
@@ -53,6 +55,27 @@ diretorio_principal = os.path.dirname(__file__)
 diretorio_imagens = os.path.join(diretorio_principal, 'sprites')
 diretorio_sons = os.path.join(diretorio_principal, 'sons')
 
+#Carregando músicas
+som_inicio = pygame.mixer.Sound(os.path.join(diretorio_sons, 'musica_inicio.mp3'))
+som_inicio.set_volume(0.7)
+
+som_jogo = pygame.mixer.Sound(os.path.join(diretorio_sons, 'musica_jogo.mp3'))
+som_jogo.set_volume(0.4)
+
+try:
+    som_andando = pygame.mixer.Sound(os.path.join(diretorio_sons, 'andando.mp3'))
+    som_andando.set_volume(1.0)
+
+    som_sombrinha = pygame.mixer.Sound(os.path.join(diretorio_sons, 'som_sombrinha.wav'))
+    som_sombrinha.set_volume(0.8)
+    print("Efeitos sonoros carregados")
+except pygame.error as e:
+    print("Erro ao carregar efeitos sonoros: {e}.")
+    class SomFalso: #Cria sons falsos, apenas para o jogo não quebrar
+        def play(self): pass
+        def stop(self): pass
+    som_andando = SomFalso()
+    som_sombrinha = SomFalso ()
 # --- Classes do Jogo ---
 
 class Professor(pygame.sprite.Sprite):
@@ -156,6 +179,7 @@ class Professor(pygame.sprite.Sprite):
         self.tempo_invisivel = 0
         self.drunk = False
         self.tempo_drunk = 0
+        self.som_andando_tocando = False #para o som dele andando parar somente quando ele parar e só iniciar quando ele começar a andar
 
 
     def mover(self, dx, dy, paredes):
@@ -186,6 +210,15 @@ class Professor(pygame.sprite.Sprite):
 
     def update(self, tempo_atual):
         estado_animacao_atual=self.tipo + self.direcao
+
+        #Lógica para o som de andar
+        if self.animar_agora and not self.som_andando_tocando: #Só inicia se não estava tocando
+            som_andando.play(-1) #Toca o som em loop (-1)
+            self.som_andando_tocando = True
+        elif not self.animar_agora and self.som_andando_tocando: #parou de andar
+            som_andando.stop()
+            self.som_andando_tocando=False
+
         if self.animar_agora:
             # Verifica se já passou tempo suficiente para trocar o frame
             if tempo_atual - self.tempo_animacao > self.velocidade_animacao:
@@ -337,6 +370,7 @@ class SombrinhaFrevo(Item):
         
     def aplicar_efeito(self, professor):
         super().aplicar_efeito(professor)
+        som_sombrinha.play()
         professor.velocidade = professor.velocidade_base * 2
         professor.tempo_boost = pygame.time.get_ticks() + 5000 # 5 segundos de boost
 
@@ -440,7 +474,7 @@ def criar_labirinto(lista_telhados):
 
 def main():
     """Função principal que roda o jogo."""
-    pygame.init()
+    
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
@@ -478,6 +512,8 @@ def main():
             desenhar_texto("Ajude o Prof. Stefan a chegar no Carnaval!", fonte_media, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 2, True)
             desenhar_texto("Pressione ENTER para começar", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 3 / 4, True)
             desenhar_texto("ESC para sair do jogo", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 3 / 4 + 40, True)
+            if not pygame.mixer.get_busy(): #Verifica antes se não está tocando a música
+                som_inicio.play(-1) #toca em loop
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -486,6 +522,9 @@ def main():
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_RETURN:
                         estado_jogo = "JOGANDO"
+                        # Transiciona as músicas
+                        som_inicio.stop()
+                        som_jogo.play(-1)
                         # Reinicia as variáveis do jogo
                         paredes, pos_validas, pos_e_centro, pos_e_rect, pos_s_rect = criar_labirinto(lista_telhados)
                         pos_entrada_rect = pos_e_rect
