@@ -16,6 +16,7 @@ ROXO = (128, 0, 128)
 LARANJA = (255, 165, 0)
 CIANO = (0, 255, 255)
 AZUL_CLARO_ENTRADA = (173, 216, 230) # Cor para a entrada
+CINZA = (128,128,128)
 
 # Tela
 LARGURA_TELA = 800
@@ -450,6 +451,16 @@ def main():
     for i in range(8): # número de telhados de cores diferentes
         img_t = ss_telhados.subsurface((i * 40, 0), (40, 40))
         lista_telhados.append(img_t)
+    # carregar imagem do chão
+    try:
+        caminho_fundo = os.path.join(diretorio_imagens, 'chãojogo.jpg')
+        fundo_img=pygame.image.load(caminho_fundo).convert()
+
+        fundo_img = pygame.transform.scale(fundo_img, (LARGURA_TELA, ALTURA_TELA))
+        print("Imagem de fundo carreagado com sucesso!")
+    except pygame.error as e:
+        print(f"Erro ao carregar imagem: {e}")
+        fundo_img = None #Usaremos uma cor
 
     # Fontes
     fonte_grande = pygame.font.Font(None, 74)
@@ -552,7 +563,10 @@ def main():
                     professor.rect.y -= dy * 10
 
             # --- Lógica de Desenho ---
-            tela.fill(PRETO)
+            if fundo_img: #ou seja, a imagem foi carregada com sucesso
+                tela.blit(fundo_img, (0,0))
+            else:
+                tela.fill(CINZA) #Alterado para cinza para melhor visualização do personagemz
             
             # Desenha entrada e saída
             pygame.draw.rect(tela, AZUL_CLARO_ENTRADA, pos_entrada_rect)
