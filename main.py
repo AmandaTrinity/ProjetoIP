@@ -235,8 +235,6 @@ class Aluno(pygame.sprite.Sprite):
         self.tempo_animacao = 0 #para temporização da animação
         self.velocidade_animacao = 150
 
-        
-
         self.animacoes = {}
         try:
             caminho_para_imagens = os.path.join(os.path.dirname(__file__), 'Imagens')
@@ -362,11 +360,10 @@ class FantasiaCarnaval(Item):
         professor.image.set_alpha(128) # Fica semitransparente
 
 class Parede(pygame.sprite.Sprite):
-    """Classe para as paredes do labirinto."""
-    def __init__(self, x, y):
+    """Classe para as paredes do labirinto"""
+    def __init__(self, x, y, lista_telhados):
         super().__init__()
-        self.image = pygame.Surface((TAMANHO_BLOCO, TAMANHO_BLOCO))
-        self.image.fill(AZUL_CIN)
+        self.image = random.choice(lista_telhados)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.mask = pygame.mask.from_surface(self.image) #Para não empacar nas paredes, o contato será somente com pixel direto
 
@@ -410,7 +407,7 @@ def encontrar_posicoes_acessiveis(layout, inicio_i, inicio_j):
     
     return acessiveis
 
-def criar_labirinto():
+def criar_labirinto(lista_telhados):
     """Cria os sprites do labirinto e retorna as posições válidas."""
     paredes = pygame.sprite.Group()
     pos_entrada_rect = None
@@ -422,7 +419,7 @@ def criar_labirinto():
         for j, celula in enumerate(linha):
             x, y = j * TAMANHO_BLOCO, i * TAMANHO_BLOCO
             if celula == 'P':
-                paredes.add(Parede(x, y))
+                paredes.add(Parede(x, y, lista_telhados))
             elif celula == 'E':
                 pos_entrada_rect = pygame.Rect(x, y, TAMANHO_BLOCO, TAMANHO_BLOCO)
                 pos_entrada_centro = (x + TAMANHO_BLOCO // 2, y + TAMANHO_BLOCO // 2)
@@ -446,6 +443,13 @@ def main():
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
+
+    # criação da lista das sprite_sheets dos telhados
+    ss_telhados = pygame.image.load(os.path.join(diretorio_imagens, 'telhadoscoloridos.png')).convert()
+    lista_telhados = []
+    for i in range(8): # número de telhados de cores diferentes
+        img_t = ss_telhados.subsurface((i * 40, 0), (40, 40))
+        lista_telhados.append(img_t)
 
     # Fontes
     fonte_grande = pygame.font.Font(None, 74)
@@ -472,7 +476,7 @@ def main():
                     if evento.key == pygame.K_RETURN:
                         estado_jogo = "JOGANDO"
                         # Reinicia as variáveis do jogo
-                        paredes, pos_validas, pos_e_centro, pos_e_rect, pos_s_rect = criar_labirinto()
+                        paredes, pos_validas, pos_e_centro, pos_e_rect, pos_s_rect = criar_labirinto(lista_telhados)
                         pos_entrada_rect = pos_e_rect
                         pos_saida_rect = pos_s_rect
                         
