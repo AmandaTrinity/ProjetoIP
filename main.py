@@ -9,18 +9,9 @@ from src.personagens.aluno import Aluno
 from src.coletaveis.sombrinha import SombrinhaFrevo
 from src.coletaveis.garrafaPitu import GarrafaPitu
 from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
+from src.labirinto.parede import Parede
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-# --- Classes do Jogo ---
-
-class Parede(pygame.sprite.Sprite):
-    """Classe para as paredes do labirinto"""
-    def __init__(self, x, y, lista_telhados):
-        super().__init__()
-        self.image = random.choice(lista_telhados)
-        self.rect = self.image.get_rect(topleft=(x, y))
-        self.mask = pygame.mask.from_surface(self.image) #Para não empacar nas paredes, o contato será somente com pixel direto
 
 # --- Funções Auxiliares ---
 
