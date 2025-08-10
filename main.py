@@ -1,12 +1,9 @@
 import pygame
 import sys
-import os
-from src.utils.constantes import *
-from src.utils.audio import *
+from src.utils.constantes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FPS
+from src.utils.audio import som_inicio, som_jogo
 from src.utils.setup import iniciar_jogo, carregar_recursos, carregar_fontes
 from src.telas.telas import tela_inicial, tela_vitoria, tela_derrota, lidar_eventos_fim_de_jogo, rodar_estado_jogando
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Jogo Principal
 def main():
