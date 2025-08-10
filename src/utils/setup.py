@@ -40,3 +40,22 @@ def carregar_fontes():
     fonte_media = pygame.font.Font(None, 50)
     fonte_pequena = pygame.font.Font(None, 36)
     return fonte_grande, fonte_media, fonte_pequena
+
+def carregar_recursos():
+    # Carrega a sprite sheet dos telhados e cria uma lista de imagens individuais
+    spritesheet_telhados = pygame.image.load(os.path.join(SPRITES_DIR, 'telhadoscoloridos.png')).convert()
+    lista_telhados = []
+    for i in range(8): # O número de telhados de cores diferentes na sprite sheet
+        imagem_telhado = spritesheet_telhados.subsurface((i * 40, 0), (40, 40))
+        lista_telhados.append(imagem_telhado)
+
+    # Carrega a imagem de fundo do jogo
+    try:
+        caminho_fundo = os.path.join(SPRITES_DIR, 'chãojogo.jpg')
+        imagem_fundo=pygame.image.load(caminho_fundo).convert()
+        imagem_fundo = pygame.transform.scale(imagem_fundo, (LARGURA_TELA, ALTURA_TELA))
+        print("Imagem de fundo carreagado com sucesso!")
+    except pygame.error as e:
+        print(f"Erro ao carregar imagem: {e}")
+        imagem_fundo = None # Se a imagem falhar, usaremos uma cor de fundo sólida
+    return lista_telhados, imagem_fundo
