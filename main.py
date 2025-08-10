@@ -11,6 +11,7 @@ from src.coletaveis.sombrinha import SombrinhaFrevo
 from src.coletaveis.garrafaPitu import GarrafaPitu
 from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
 from src.labirinto.labirinto import criar_labirinto
+from src.telas.telas import tela_inicial, tela_vitoria, tela_derrota
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -50,13 +51,7 @@ def main():
     # Loop principal
     while True:
         if estado_jogo == "TELA_INICIAL":
-            tela.fill(PRETO)
-            desenhar_texto(TITULO_JOGO, fonte_grande, AMARELO, tela, LARGURA_TELA // 2, ALTURA_TELA // 4, True)
-            desenhar_texto("Ajude o Prof. Stefan a chegar no Carnaval!", fonte_media, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 2, True)
-            desenhar_texto("Pressione ENTER para começar", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 3 / 4, True)
-            desenhar_texto("ESC para sair do jogo", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 3 / 4 + 40, True)
-            if not pygame.mixer.get_busy(): #Verifica antes se não está tocando a música
-                som_inicio.play(-1) #toca em loop
+            tela_inicial(tela,fonte_grande,fonte_media,fonte_pequena,som_inicio)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -171,11 +166,8 @@ def main():
                 estado_jogo = "DERROTA"
 
         elif estado_jogo == "VITORIA":
-            tela.fill(VERDE)
-            desenhar_texto("VOCÊ CONSEGUIU!", fonte_grande, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 3, True)
-            desenhar_texto("RUMO AO CARNAVAL!", fonte_media, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 2, True)
-            desenhar_texto("Pressione ENTER para jogar de novo", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 2 / 3, True)
-            
+            tela_vitoria(tela,fonte_grande,fonte_media,fonte_pequena)
+
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
@@ -184,11 +176,8 @@ def main():
                     estado_jogo = "TELA_INICIAL"
 
         elif estado_jogo == "DERROTA":
-            tela.fill(VERMELHO)
-            desenhar_texto("TEMPO ESGOTADO!", fonte_grande, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 3, True)
-            desenhar_texto("Mais um ano no CIn...", fonte_media, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 2, True)
-            desenhar_texto("Pressione ENTER para tentar de novo", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 2 / 3, True)
-            
+            tela_derrota(tela,fonte_grande,fonte_media,fonte_pequena)
+
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
