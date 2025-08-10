@@ -45,7 +45,7 @@ def carregar_recursos():
     # Carrega a sprite sheet dos telhados e cria uma lista de imagens individuais
     spritesheet_telhados = pygame.image.load(os.path.join(SPRITES_DIR, 'telhadoscoloridos.png')).convert()
     lista_telhados = []
-    for i in range(8): # O número de telhados de cores diferentes na sprite sheet
+    for i in range(6): # O número de telhados de cores diferentes na sprite sheet
         imagem_telhado = spritesheet_telhados.subsurface((i * 40, 0), (40, 40))
         lista_telhados.append(imagem_telhado)
 
