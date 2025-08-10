@@ -1,12 +1,11 @@
 import pygame
 import sys
-import random
 import os
 from src.utils.constantes import *
 from src.utils.audio import *
 from src.utils.desenho import desenhar_texto
 from src.utils.setup import iniciar_jogo
-from src.telas.telas import tela_inicial, tela_vitoria, tela_derrota
+from src.telas.telas import tela_inicial, tela_vitoria, tela_derrota, lidar_eventos_fim_de_jogo
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -139,23 +138,11 @@ def main():
 
         elif estado_jogo == "VITORIA":
             tela_vitoria(tela,fonte_grande,fonte_media,fonte_pequena)
-
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
-                    estado_jogo = "TELA_INICIAL"
+            estado_jogo = lidar_eventos_fim_de_jogo(estado_jogo)
 
         elif estado_jogo == "DERROTA":
             tela_derrota(tela,fonte_grande,fonte_media,fonte_pequena)
-
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
-                    estado_jogo = "TELA_INICIAL"
+            estado_jogo = lidar_eventos_fim_de_jogo(estado_jogo)
 
         # Atualiza a tela inteira
         pygame.display.flip()

@@ -1,4 +1,5 @@
 import pygame
+import sys
 from src.utils.desenho import desenhar_texto
 from src.utils.constantes import *
 
@@ -22,3 +23,14 @@ def tela_derrota(tela,fonte_grande,fonte_media,fonte_pequena):
     desenhar_texto("TEMPO ESGOTADO!", fonte_grande, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 3, True)
     desenhar_texto("Mais um ano no CIn...", fonte_media, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA // 2, True)
     desenhar_texto("Pressione ENTER para tentar de novo", fonte_pequena, BRANCO, tela, LARGURA_TELA // 2, ALTURA_TELA * 2 / 3, True)
+
+#Lida com os eventos nas telas de vitória e derrota, retornando o novo estado
+def lidar_eventos_fim_de_jogo(estado_atual):
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
+            return "TELA_INICIAL"
+    # Mantém o estado se nenhuma ação relevante for tomada
+    return estado_atual

@@ -25,9 +25,7 @@ class Professor(pygame.sprite.Sprite):
             for i in range(4): #Adiciona imagens andando para esquerda
                 nome_do_arquivo = f"stefan_esquerda{i}.png"
                 caminho_completo = os.path.join(IMAGENS_DIR, nome_do_arquivo)
-                
-                print(f"Tentando carregar: {caminho_completo}") 
-                
+                                
                 frame_esquerda = pygame.image.load(caminho_completo).convert_alpha()
                 frame_esquerda = pygame.transform.scale(frame_esquerda, (40, 40))
                 frames_normais_esquerda.append(frame_esquerda)
