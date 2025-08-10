@@ -18,21 +18,21 @@ def main():
     relogio = pygame.time.Clock()
 
     # Carrega a sprite sheet dos telhados e cria uma lista de imagens individuais
-    ss_telhados = pygame.image.load(os.path.join(SPRITES_DIR, 'telhadoscoloridos.png')).convert()
+    spritesheet_telhados = pygame.image.load(os.path.join(SPRITES_DIR, 'telhadoscoloridos.png')).convert()
     lista_telhados = []
     for i in range(8): # O número de telhados de cores diferentes na sprite sheet
-        img_t = ss_telhados.subsurface((i * 40, 0), (40, 40))
-        lista_telhados.append(img_t)
+        imagem_telhado = spritesheet_telhados.subsurface((i * 40, 0), (40, 40))
+        lista_telhados.append(imagem_telhado)
 
     # Carrega a imagem de fundo do jogo
     try:
         caminho_fundo = os.path.join(SPRITES_DIR, 'chãojogo.jpg')
-        fundo_img=pygame.image.load(caminho_fundo).convert()
-        fundo_img = pygame.transform.scale(fundo_img, (LARGURA_TELA, ALTURA_TELA))
+        imagem_fundo=pygame.image.load(caminho_fundo).convert()
+        imagem_fundo = pygame.transform.scale(imagem_fundo, (LARGURA_TELA, ALTURA_TELA))
         print("Imagem de fundo carreagado com sucesso!")
     except pygame.error as e:
         print(f"Erro ao carregar imagem: {e}")
-        fundo_img = None # Se a imagem falhar, usaremos uma cor de fundo sólida
+        imagem_fundo = None # Se a imagem falhar, usaremos uma cor de fundo sólida
     
     fonte_grande,fonte_media,fonte_pequena = carregar_fontes()
     
@@ -79,7 +79,7 @@ def main():
                 if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                     estado_jogo = "TELA_INICIAL" # Volta para a tela inicial
 
-            dx, dy = lidar_movimento_jogador(professor, paredes)
+            direcao_x, direcao_y = lidar_movimento_jogador(professor, paredes)
 
             # Atualização dos Sprites e Lógica do Jogo
             professor.update(tempo_atual)
@@ -96,12 +96,12 @@ def main():
                 if pygame.sprite.spritecollide(professor, alunos, False, pygame.sprite.collide_mask):
                     tempo_inicio_jogo -= 2000 # Penalidade: perde 2 segundos
                     # Empurra o professor para uma posição segura
-                    professor.rect.x -= dx * 10
-                    professor.rect.y -= dy * 10
+                    professor.rect.x -= direcao_x * 10
+                    professor.rect.y -= direcao_y * 10
 
             # Desenho na Tela 
-            if fundo_img: # Se a imagem de fundo foi carregada, a desenha
-                tela.blit(fundo_img, (0,0))
+            if imagem_fundo: # Se a imagem de fundo foi carregada, a desenha
+                tela.blit(imagem_fundo, (0,0))
             else:
                 tela.fill(CINZA) # Caso contrário, preenche com uma cor sólida
             

@@ -96,31 +96,31 @@ class Professor(pygame.sprite.Sprite):
         self.som_andando_tocando = False #para o som dele andando parar somente quando ele parar e só iniciar quando ele começar a andar
 
 
-    def mover(self, dx, dy, paredes):
+    def mover(self, direcao_x, direcao_y, paredes):
         # O método mover SÓ se preocupa com o movimento.
         # Se o personagem se moveu (dx ou dy não são zero), ativamos a animação.
-        if dx != 0 or dy != 0:
+        if direcao_x != 0 or direcao_y != 0:
             self.animar_agora = True
         else:
             self.animar_agora = False
 
         #Lógica de direção
-        if dx>0:
+        if direcao_x > 0:
             self.direcao='direita'
-        elif dx<0:
+        elif direcao_x < 0:
             self.direcao='esquerda'
 
-        self.rect.x += dx * self.velocidade
+        self.rect.x += direcao_x * self.velocidade
         for parede in paredes:
             if pygame.sprite.collide_mask(self, parede):
-                if dx > 0: self.rect.right = parede.rect.left
-                if dx < 0: self.rect.left = parede.rect.right
+                if direcao_x > 0: self.rect.right = parede.rect.left
+                if direcao_x < 0: self.rect.left = parede.rect.right
         
-        self.rect.y += dy * self.velocidade
+        self.rect.y += direcao_y * self.velocidade
         for parede in paredes:
             if pygame.sprite.collide_mask(self, parede):
-                if dy > 0: self.rect.bottom = parede.rect.top
-                if dy < 0: self.rect.top = parede.rect.bottom
+                if direcao_y > 0: self.rect.bottom = parede.rect.top
+                if direcao_y < 0: self.rect.top = parede.rect.bottom
 
     def update(self, tempo_atual):
         estado_animacao_atual=self.tipo + self.direcao
