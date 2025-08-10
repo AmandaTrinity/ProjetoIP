@@ -4,8 +4,9 @@ import os
 from src.utils.constantes import *
 from src.utils.audio import *
 from src.utils.desenho import desenhar_texto
-from src.utils.setup import iniciar_jogo
+from src.utils.setup import iniciar_jogo, carregar_fontes
 from src.telas.telas import tela_inicial, tela_vitoria, tela_derrota, lidar_eventos_fim_de_jogo
+from src.movimento.movimento import lidar_movimento_jogador
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,11 +33,8 @@ def main():
     except pygame.error as e:
         print(f"Erro ao carregar imagem: {e}")
         fundo_img = None # Se a imagem falhar, usaremos uma cor de fundo sólida
-
-    # Carrega as fontes usadas no jogo
-    fonte_grande = pygame.font.Font(None, 74)
-    fonte_media = pygame.font.Font(None, 50)
-    fonte_pequena = pygame.font.Font(None, 36)
+    
+    fonte_grande,fonte_media,fonte_pequena = carregar_fontes()
     
     # Variáveis de Estado do Jogo 
     estado_jogo = "TELA_INICIAL"
@@ -81,20 +79,7 @@ def main():
                 if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                     estado_jogo = "TELA_INICIAL" # Volta para a tela inicial
 
-            # Lógica de Movimento do Jogador
-            teclas = pygame.key.get_pressed()
-            dx, dy = 0, 0
-            if teclas[pygame.K_LEFT] or teclas[pygame.K_a]: dx = -1
-            if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]: dx = 1
-            if teclas[pygame.K_UP] or teclas[pygame.K_w]: dy = -1
-            if teclas[pygame.K_DOWN] or teclas[pygame.K_s]: dy = 1
-            
-            # Efeito da Pitú (bêbado) inverte os controles
-            if professor.drunk:
-                dx *= -1
-                dy *= -1
-
-            professor.mover(dx, dy, paredes)
+            dx, dy = lidar_movimento_jogador(professor, paredes)
 
             # Atualização dos Sprites e Lógica do Jogo
             professor.update(tempo_atual)

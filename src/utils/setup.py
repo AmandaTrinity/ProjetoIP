@@ -33,3 +33,10 @@ def iniciar_jogo(lista_telhados):
     tempo_inicio = pygame.time.get_ticks()
 
     return paredes, pos_e_rect, pos_s_rect, professor, itens, todos_sprites, alunos, tempo_inicio
+
+# Carrega as fontes usadas no jogo
+def carregar_fontes():
+    fonte_grande = pygame.font.Font(None, 74)
+    fonte_media = pygame.font.Font(None, 50)
+    fonte_pequena = pygame.font.Font(None, 36)
+    return fonte_grande, fonte_media, fonte_pequena
