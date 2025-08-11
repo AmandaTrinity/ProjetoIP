@@ -4,7 +4,7 @@
 
 O nosso projeto é um jogo de labirinto onde o personagem principal, o Professor Stefan, precisa coletar três itens temáticos do Carnaval de Olinda (uma sombrinha de carnaval, uma garrafa de pitu e uma máscara de carnaval) e encontrar a saída do labirinto antes que o tempo acabe. A história gira em torno de um universitário do CIn/UFPE do período 2024.2 que, para ser liberado para o feriado, precisa completar essa jornada carnavalesca dentro da faculdade.
 
-Cada coletável tem uma função especial no jogo (a ser definida). O labirinto, os coletáveis e a saída são gerados aleatoriamente a cada partida, garantindo que cada jogo seja uma experiência nova e divertida.
+Cada coletável tem uma função especial no jogo. O labirinto, os coletáveis e a saída são gerados aleatoriamente a cada partida, garantindo que cada jogo seja uma experiência nova e divertida.
 
 ## Participantes do Projeto:
 
@@ -37,26 +37,38 @@ Nosso grupo se dividiu para desenvolver o jogo de maneira mais eficiente. Alguns
 
 ## Arquitetura do Projeto
 
-### src/funcoes\_labirinto.py
-
-Responsável por gerar o labirinto, posicionar a porta de saída, definir as cores de fundo e das paredes.
-
-### src/funcoes\_coletaveis.py
-
-Gera os coletáveis (sombrinha, pitu, máscara), define suas funções e verifica coleta e vitória.
-
-### src/funcoes\_personagem.py
-
-Controla as animações, direções, movimentos e eventos do personagem (Stefan).
-
-### src/funcoes\_telas\_jogo.py
-
-Carrega a tela inicial e a tela de finalização do jogo.
-
-### assets/
-
-Contém imagens, sons e sprites usados no jogo.
-
+```bash
+PROJETO/                          
+│── assets/                    # Recursos estáticos do projeto
+│   ├── imagens/               # Imagens usadas no projeto
+│   │   ├── sprites/           # Sprites utilizados no jogo
+│   ├── sons/                  # Arquivos de áudio (efeitos sonoros e músicas)
+│   
+│── src/                       # Código fonte do projeto
+│   ├── coletaveis/            # Módulo para objetos coletáveis no jogo
+│   │   ├── coletaveis.py      # Definição dos objetos coletáveis
+│   │   ├── fantasiaCarnaval.py # Coletável: fantasia de carnaval
+│   │   ├── garrafaPitu.py     # Coletável: garrafa de Pitu
+│   │   ├── sombrinha.py       # Coletável: sombrinha
+│   ├── labirinto/             # Lógica do labirinto
+│   │   ├── labirinto.py       # Definição e lógica do labirinto
+│   ├── movimento/             # Lógica de movimentação dos personagens
+│   │   ├── movimento.py       # Movimentação dos personagens no jogo
+│   ├── personagens/           # Módulo dos personagens do jogo
+│   │   ├── aluno.py           # Definição do personagem aluno
+│   │   ├── professor.py       # Definição do personagem professor
+│   ├── telas/                 # Definição das telas e interfaces gráficas
+│   │   ├── telas.py           # Lógica de renderização das telas
+│   ├── utils/                 # Funções auxiliares e utilitárias
+│   │   ├── audio.py           # Manipulação de áudio (efeitos sonoros e músicas)
+│   │   ├── constantes.py      # Constantes utilizadas no código
+│   │   ├── desenho.py         # Funções de desenho gráfico
+│   │   ├── setup.py           # Configurações iniciais do projeto
+│   
+│── main                   # Arquivo principal do projeto
+│
+│── package.json               # Arquivo de configuração do projeto (scripts, etc.)
+```
 ## Principais Objetivos do Projeto:
 
   * Criar um jogo funcional usando Pygame e Pyamaze
@@ -64,9 +76,6 @@ Contém imagens, sons e sprites usados no jogo.
   * Trabalhar em equipe para desenvolver um projeto completo
 
 Este README será atualizado conforme o desenvolvimento do jogo avança.
-
-
-# Projeto Introdução a Programação
 
 # Organização da arquitetura
 
