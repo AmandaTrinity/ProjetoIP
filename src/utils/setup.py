@@ -49,6 +49,14 @@ def carregar_recursos():
         imagem_telhado = spritesheet_telhados.subsurface((i * 40, 0), (40, 40))
         lista_telhados.append(imagem_telhado)
 
+    spritesheet_porta = pygame.image.load(os.path.join(SPRITES_DIR, 'porta_entrada_saida.png')).convert()
+    lista_sprites_porta = []
+    altura_frame = 40
+    largura_frame = 40
+
+    for i in range(4):
+            frame = spritesheet_porta.subsurface((i * largura_frame, 0), (largura_frame, altura_frame))
+            lista_sprites_porta.append(frame)
     # Carrega a imagem de fundo do jogo
     try:
         caminho_fundo = os.path.join(SPRITES_DIR, 'chãojogo.jpg')
@@ -58,4 +66,4 @@ def carregar_recursos():
     except pygame.error as e:
         print(f"Erro ao carregar imagem: {e}")
         imagem_fundo = None # Se a imagem falhar, usaremos uma cor de fundo sólida
-    return lista_telhados, imagem_fundo
+    return lista_telhados, imagem_fundo, lista_sprites_porta

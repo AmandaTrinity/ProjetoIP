@@ -12,7 +12,7 @@ def main():
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
 
-    lista_telhados, imagem_fundo = carregar_recursos()
+    lista_telhados, imagem_fundo, lista_sprites_porta = carregar_recursos()
 
     fonte_grande,fonte_media,fonte_pequena = carregar_fontes()
     
@@ -41,16 +41,21 @@ def main():
                         # Configura e inicializa os elementos da fase
                         paredes, pos_entrada_rect, pos_saida_rect, professor, itens, todos_sprites, alunos, tempo_inicio_jogo = iniciar_jogo(lista_telhados)
 
+                        porta_animando = False
+                        porta_frame_atual = 0
+                        porta_ultimo_update = 0
+
+
                     if evento.key == pygame.K_ESCAPE:
                         pygame.quit()
                         sys.exit()
 
         # Estado: JOGANDO
         elif estado_jogo == "JOGANDO":
-            estado_jogo, tempo_inicio_jogo = rodar_estado_jogando(
+            estado_jogo, tempo_inicio_jogo, porta_animando, porta_frame_atual, porta_ultimo_update = rodar_estado_jogando(
                 tela, professor, alunos, itens, todos_sprites, paredes,
-                pos_entrada_rect, pos_saida_rect, imagem_fundo,
-                fonte_pequena, tempo_inicio_jogo)
+                pos_entrada_rect, pos_saida_rect, imagem_fundo, lista_sprites_porta,
+                fonte_pequena, tempo_inicio_jogo, porta_animando, porta_frame_atual, porta_ultimo_update)
 
         # Estado: VITÓRIA
         elif estado_jogo == "VITORIA":

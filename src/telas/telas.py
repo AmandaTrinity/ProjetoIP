@@ -68,7 +68,7 @@ def _atualizar_estado_jogando(professor, alunos, itens, tempo_atual, direcao_x, 
     
     return tempo_inicio_jogo
 
-def _desenhar_tela_jogando(tela, imagem_fundo, paredes, todos_sprites, itens, alunos, pos_entrada_rect, pos_saida_rect, fonte_pequena, tempo_restante, professor):
+def _desenhar_tela_jogando(tela, imagem_fundo, paredes, todos_sprites, itens, alunos, pos_entrada_rect, pos_saida_rect, lista_sprites_porta, fonte_pequena, tempo_restante, professor, porta_frame_atual):
     """Desenha todos os elementos visuais do jogo na tela."""
     # Desenha o fundo
     if imagem_fundo:
@@ -76,9 +76,12 @@ def _desenhar_tela_jogando(tela, imagem_fundo, paredes, todos_sprites, itens, al
     else:
         tela.fill(CINZA)
     
-    # Desenha elementos do labirinto e sprites
-    pygame.draw.rect(tela, AZUL_CLARO_ENTRADA, pos_entrada_rect)
-    pygame.draw.rect(tela, LARANJA, pos_saida_rect)
+    # Desenha as portas
+    # A porta de entrada está sempre no mesmo estado (aberta)
+    tela.blit(lista_sprites_porta[3], pos_entrada_rect) 
+    # A porta de saída abre quando todos os itens são coletados
+    tela.blit(lista_sprites_porta[porta_frame_atual], pos_saida_rect)
+    
     paredes.draw(tela)
     todos_sprites.draw(tela)
     itens.draw(tela)
@@ -90,19 +93,20 @@ def _desenhar_tela_jogando(tela, imagem_fundo, paredes, todos_sprites, itens, al
 
 def _verificar_fim_de_jogo(professor, pos_saida_rect, tempo_restante):
     """Verifica as condições de vitória ou derrota."""
-    if len(professor.itens_coletados) == 3 and professor.rect.colliderect(pos_saida_rect):
-        return "VITORIA"
+    if len(professor.itens_coletados) == 3:
+        if professor.rect.colliderect(pos_saida_rect):
+            return "VITORIA"
     if tempo_restante <= 0:
         return "DERROTA"
     return "JOGANDO"
 
 # Executa um ciclo completo do estado 'JOGANDO', orquestrando as chamadas
 # Retorna o próximo estado do jogo e o tempo de início atualizado.
-def rodar_estado_jogando(tela, professor, alunos, itens, todos_sprites, paredes, pos_entrada_rect, pos_saida_rect, imagem_fundo, fonte_pequena, tempo_inicio_jogo):
+def rodar_estado_jogando(tela, professor, alunos, itens, todos_sprites, paredes, pos_entrada_rect, pos_saida_rect, imagem_fundo, lista_sprites_porta, fonte_pequena, tempo_inicio_jogo, porta_animando, porta_frame_atual, porta_ultimo_update):
     # 1. Processa eventos e input do jogador
     direcao_x, direcao_y, sair_para_menu = _processar_eventos_jogando(professor, paredes)
     if sair_para_menu:
-        return "TELA_INICIAL", tempo_inicio_jogo
+        return "TELA_INICIAL", tempo_inicio_jogo, porta_animando, porta_frame_atual, porta_ultimo_update
 
     # 2. Atualiza o estado de todos os objetos do jogo
     tempo_atual = pygame.time.get_ticks()
@@ -110,14 +114,30 @@ def rodar_estado_jogando(tela, professor, alunos, itens, todos_sprites, paredes,
         professor, alunos, itens, tempo_atual, direcao_x, direcao_y, tempo_inicio_jogo
     )
 
+    # Se todos os itens foram coletados E a animação não está rodando E a porta está no frame inicial
+    if len(professor.itens_coletados) == 3 and not porta_animando and porta_frame_atual == 0:
+        porta_animando = True 
+        porta_ultimo_update = tempo_atual  # Marca o tempo do início
+
+    if porta_animando:
+        intervalo_animacao = 150 
+        if tempo_atual - porta_ultimo_update > intervalo_animacao:
+            porta_frame_atual += 1  # Avança para o próximo frame
+            porta_ultimo_update = tempo_atual  # Reseta o cronômetro
+
+            # Se a animação chegou ao fim
+            if porta_frame_atual >= 3:
+                porta_frame_atual = 3  # Trava no último frame (porta aberta)
+                porta_animando = False 
+
     # 3. Desenha a cena
     tempo_restante = TEMPO_TOTAL_JOGO - (tempo_atual - tempo_inicio_jogo) // 1000
     _desenhar_tela_jogando(
         tela, imagem_fundo, paredes, todos_sprites, itens, alunos,
-        pos_entrada_rect, pos_saida_rect, fonte_pequena, tempo_restante, professor
+        pos_entrada_rect, pos_saida_rect, lista_sprites_porta, fonte_pequena, tempo_restante, professor, porta_frame_atual
     )
 
     # 4. Verifica se o jogo terminou (vitória/derrota)
     novo_estado = _verificar_fim_de_jogo(professor, pos_saida_rect, tempo_restante)
 
-    return novo_estado, tempo_inicio_jogo
+    return novo_estado, tempo_inicio_jogo, porta_animando, porta_frame_atual, porta_ultimo_update
