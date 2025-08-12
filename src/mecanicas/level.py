@@ -61,5 +61,4 @@ def setup_fase(fase, lista_telhados, sons):
         'obstaculos': obstaculos,
         'hud_vars': hud_vars,
         'pos_entrada': pos_e_rect,
-        'pos_saida': pos_s_rect
-    }
+        'pos_saida': pos_s_rect}

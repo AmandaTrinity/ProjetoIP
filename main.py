@@ -1,11 +1,9 @@
 # main.py
 import pygame
-import sys
-import os
 from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
-from src.utils.audio import toggle_mute, carregar_sons
+from src.utils.audio import carregar_sons
 from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 from src.utils.setup import carregar_recursos_globais
@@ -19,14 +17,14 @@ def main():
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
 
-    # --- CARREGAMENTO DE RECURSOS GLOBAIS ---
+    # CARREGAMENTO DE RECURSOS GLOBAIS
     recursos_visuais = carregar_recursos_globais()
     sons = carregar_sons()
 
     pygame.mixer.set_num_channels(3)
     canal_musica = pygame.mixer.Channel(0)
     
-    # --- VARIÁVEIS DE ESTADO DO JOGO ---
+    # VARIÁVEIS DE ESTADO DO JOGO
     estado_som = {
         'som_mutado': False,
         'rect_hud': pygame.Rect(LARGURA_BARRA_LATERAL - 45, 10, 35, 30),
@@ -47,13 +45,13 @@ def main():
     
     elementos_fase = {}
 
-    # --- LOOP PRINCIPAL ---
+    # LOOP PRINCIPAL
     while True:
         tempo_atual = pygame.time.get_ticks()
         comandos_usuario = processar_eventos(estado_jogo, estado_som)
         estado_som['som_mutado'] = comandos_usuario['som_mutado']
 
-        # --- ATUALIZAÇÃO DE ESTADO BASEADO NOS COMANDOS ---
+        # ATUALIZAÇÃO DE ESTADO BASEADO NOS COMANDOS ---
         acao = comandos_usuario.get('acao')
         if acao == 'VOLTAR_MENU':
             canal_musica.stop(); pygame.mixer.Channel(2).stop()
@@ -77,13 +75,13 @@ def main():
         elif acao == 'CANCELAR_RESET':
             estado_jogo = "TELA_INICIAL"
         
-        # --- LÓGICA DE ESTADOS ---
+        # LÓGICA DE ESTADOS
         if estado_jogo == "TELA_INICIAL":
             if not canal_musica.get_busy():
                 canal_musica.play(sons['inicio'], -1)
             desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
 
-        ### NOVO ### - Estado para desenhar o pop-up de confirmação
+        # Estado para desenhar o pop-up de confirmação
         elif estado_jogo == "CONFIRMAR_RESET":
             # Primeiro, desenha a tela inicial por baixo para criar o efeito de pop-up
             desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
