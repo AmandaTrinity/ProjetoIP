@@ -6,7 +6,7 @@ from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
 from src.utils.audio import SomFalso, toggle_mute
-from src.utils.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
+from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 
 def main():
