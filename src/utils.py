@@ -1,7 +1,7 @@
 # src/utils.py
 import pygame
 import os
-from settings import VERMELHO, BRANCO, CINZA, AMARELO
+from src.settings import VERMELHO, BRANCO, CINZA, AMARELO
 
 def desenhar_texto(texto, fonte, cor, superficie, x, y, centro=False):
     """Desenha um objeto de texto na superfície."""
@@ -58,7 +58,7 @@ def exibir_tela_final(tela, cor, msg1, msg2, fontes, rect_botao_mudo, som_mutado
 
 def desenhar_hud(tela, hud_vars, professor, fase, tempo_restante, fontes, icones, rect_botao_mudo, som_mutado):
     """Desenha toda a barra lateral (HUD)."""
-    from settings import LARGURA_TELA, ALTURA_TELA, LARGURA_BARRA_LATERAL, AZUL_CIN, BRANCO, AMARELO, VERMELHO, PRETO
+    from src.settings import LARGURA_TELA, ALTURA_TELA, LARGURA_BARRA_LATERAL, AZUL_CIN, BRANCO, AMARELO, VERMELHO, PRETO
 
     superficie_barra_lateral = pygame.Surface((LARGURA_BARRA_LATERAL, ALTURA_TELA))
     superficie_barra_lateral.fill(AZUL_CIN)

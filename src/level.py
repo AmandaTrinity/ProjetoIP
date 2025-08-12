@@ -1,8 +1,11 @@
 # src/level.py
 import pygame
 import random
-from settings import *
-from sprites import Parede, Professor, Aluno, SombrinhaFrevo, GarrafaPitu, FantasiaCarnaval
+from src.settings import *
+from src.sprites import Parede, Professor, Aluno
+from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
+from src.coletaveis.garrafaPitu import GarrafaPitu
+from src.coletaveis.sombrinha import SombrinhaFrevo
 
 def encontrar_posicoes_acessiveis(layout, inicio_i, inicio_j):
     """Encontra todas as posições 'C' alcançáveis a partir de um ponto."""

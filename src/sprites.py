@@ -1,9 +1,8 @@
 # src/sprites.py
 import pygame
-import os
 import random  # <- ESTA É A LINHA QUE FALTAVA
-from settings import *
-from utils import carregar_animacao
+from src.settings import *
+from src.utils import carregar_animacao
 
 # --- Classes de Sprites ---
 class Professor(pygame.sprite.Sprite):
@@ -188,63 +187,3 @@ class Parede(pygame.sprite.Sprite):
         self.image = random.choice(lista_telhados)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
-
-
-# --- Classes de Itens ---
-class Item(pygame.sprite.Sprite):
-    def __init__(self, nome, pos, img_path, n, w, h, new_w=None, new_h=None):
-        super().__init__()
-        self.nome = nome
-        caminho_completo = os.path.join(DIRETORIO_IMAGENS, img_path)
-        try:
-            sprite_sheet = pygame.image.load(caminho_completo).convert_alpha()
-        except pygame.error:
-            print(f"AVISO: Não foi possível carregar o item '{caminho_completo}'. Usando fallback.")
-            sprite_sheet = pygame.Surface((w, h), pygame.SRCALPHA)
-        
-        self.lista_sprites = []
-        for i in range(n):
-            sprite = sprite_sheet.subsurface((i * w, 0), (w, h))
-            if new_w and new_h:
-                sprite = pygame.transform.scale(sprite, (new_w, new_h))
-            self.lista_sprites.append(sprite)
-            
-        self.index_lista = 0
-        self.image = self.lista_sprites[self.index_lista]
-        self.rect = self.image.get_rect(center=pos)
-        self.mask = pygame.mask.from_surface(self.image)
-
-    def update(self, *args):
-        self.index_lista = (self.index_lista + 0.15) % len(self.lista_sprites)
-        self.image = self.lista_sprites[int(self.index_lista)]
-
-    def aplicar_efeito(self, professor):
-        raise NotImplementedError
-
-class SombrinhaFrevo(Item):
-    def __init__(self, pos):
-        super().__init__("Sombrinha de Frevo", pos, 'sprite_sheetsombrinha.png', 3, 26, 26)
-    
-    def aplicar_efeito(self, professor):
-        pygame.mixer.Channel(0).pause()
-        professor.canal_efeitos.play(professor.som_sombrinha)
-        professor.velocidade = VELOCIDADE_JOGADOR * 2
-        professor.tempo_boost = pygame.time.get_ticks() + DURACAO_BOOST_MS
-
-class GarrafaPitu(Item):
-    def __init__(self, pos, duracao_ms):
-        super().__init__("Garrafa de Pitú", pos, 'pitu.png', 2, 60, 190, 10, 32)
-        self.duracao_ms = duracao_ms
-    
-    def aplicar_efeito(self, professor):
-        professor.drunk = True
-        professor.tempo_drunk = pygame.time.get_ticks() + self.duracao_ms
-
-class FantasiaCarnaval(Item):
-    def __init__(self, pos):
-        super().__init__("Máscara de Carnaval", pos, 'FantasiaVampiro 19x25.png', 1, 19, 25)
-    
-    def aplicar_efeito(self, professor):
-        professor.tipo = 'vampiro '
-        professor.invisivel = True
-        professor.tempo_invisivel = pygame.time.get_ticks() + DURACAO_INVISIBILIDADE_MS
