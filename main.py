@@ -5,7 +5,7 @@ import os
 from src.utils.constantes import *
 from src.utils.desenho import desenhar_texto, desenhar_hud, desenhar_botao_mudo, exibir_tela_final
 from src.level import setup_fase
-from src.utils.setup import SomFalso
+from src.utils.audio import SomFalso, toggle_mute
 
 # --- FUNÇÕES PARA GERENCIAR RECORDE ---
 ARQUIVO_PONTUACAO = 'melhores_tempos.txt'
@@ -42,16 +42,6 @@ def desenhar_tela_inicial(tela, fontes, melhores_tempos, som_mutado, botao_mudo_
         texto_tempo = f"{i+1}. {tempo:.2f}s" if tempo != float('inf') else f"{i+1}. --"
         desenhar_texto(texto_tempo, fontes['pequena'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2 + (i * 30), True)
     desenhar_texto("Pressione R para resetar o tempo", fontes['pequena'], VERMELHO, tela, LARGURA_TOTAL / 2, ALTURA_TELA * 4.5 / 5, True)
-
-
-def toggle_mute(muted):
-    """Ativa ou desativa o som de todos os canais."""
-    muted = not muted
-    volume_fator = 0 if muted else 1
-    pygame.mixer.Channel(0).set_volume(VOLUMES_PADRAO['musica'] * volume_fator)
-    pygame.mixer.Channel(1).set_volume(VOLUMES_PADRAO['efeitos'] * volume_fator)
-    pygame.mixer.Channel(2).set_volume(VOLUMES_PADRAO['passos'] * volume_fator)
-    return muted
 
 def main():
     pygame.init()

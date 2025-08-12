@@ -18,9 +18,3 @@ def carregar_animacao(caminho_base, prefixo_arquivo, num_frames, novo_tamanho):
             fallback_surface.fill(VERMELHO)
             frames.append(fallback_surface)
     return frames
-
-class SomFalso:
-    """Classe substituta para sons, caso o carregamento falhe."""
-    def play(self, *args): pass
-    def stop(self): pass
-    def set_volume(self, v): pass
