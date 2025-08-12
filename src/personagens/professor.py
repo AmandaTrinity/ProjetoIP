@@ -1,6 +1,7 @@
 import pygame
 from src.utils.constantes import TAMANHO_BLOCO, VELOCIDADE_JOGADOR, DIRETORIO_IMAGENS
 from src.utils.setup import carregar_animacao
+from src.movimento.movimento import mover_personagem
 
 class Professor(pygame.sprite.Sprite):
     def __init__(self, x, y, som_andando, sons_efeitos):
@@ -49,40 +50,8 @@ class Professor(pygame.sprite.Sprite):
         self.som_andando_tocando = False
 
     def mover(self, desloc_x, desloc_y, paredes):
-        # Primeiro, movemos e verificamos a colisão no eixo X (horizontal)
-        self.hitbox.x += desloc_x * self.velocidade
-        self.rect.centerx = self.hitbox.centerx  # Sincroniza o rect com o hitbox para a verificação
-        
-        # Verifica se há colisões após o movimento horizontal
-        colisoes = pygame.sprite.spritecollide(self, paredes, False, pygame.sprite.collide_mask)
-        if colisoes:
-            # Se colidiu, voltamos à posição X anterior ao movimento
-            self.hitbox.x -= desloc_x * self.velocidade
-            self.rect.centerx = self.hitbox.centerx
-
-        # Agora, independentemente do que aconteceu em X, fazemos o mesmo para o eixo Y (vertical)
-        self.hitbox.y += desloc_y * self.velocidade
-        self.rect.centery = self.hitbox.centery  # Sincroniza o rect com o hitbox para a verificação
-
-        # Verifica se há colisões após o movimento vertical
-        colisoes = pygame.sprite.spritecollide(self, paredes, False, pygame.sprite.collide_mask)
-        if colisoes:
-            # Se colidiu, voltamos à posição Y anterior ao movimento
-            self.hitbox.y -= desloc_y * self.velocidade
-            self.rect.centery = self.hitbox.centery
-
-        # --- Finalização ---
-        # A posição final do hitbox (e do rect) está agora correta, permitindo o deslize.
-        
-        personagem_se_moveu = (desloc_x != 0 or desloc_y != 0)
-
-        # Atualiza a direção do sprite com base na intenção de movimento horizontal
-        if desloc_x > 0:
-            self.direcao = 'direita'
-        elif desloc_x < 0:
-            self.direcao = 'esquerda'
-
-        return personagem_se_moveu
+        """Delega a lógica de movimento para o módulo especializado."""
+        return mover_personagem(self, desloc_x, desloc_y, paredes)
 
     def update(self, tempo_atual, deve_animar):
         # Controle do som de passos
