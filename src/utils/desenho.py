@@ -1,7 +1,6 @@
-# src/utils.py
+# src/utils/desenho.py
 import pygame
-import os
-from src.settings import VERMELHO, BRANCO, CINZA, AMARELO
+from src.utils.constantes import VERMELHO, BRANCO, CINZA, AMARELO
 
 def desenhar_texto(texto, fonte, cor, superficie, x, y, centro=False):
     """Desenha um objeto de texto na superfície."""
@@ -12,22 +11,6 @@ def desenhar_texto(texto, fonte, cor, superficie, x, y, centro=False):
     else:
         rect_texto.topleft = (x, y)
     superficie.blit(objeto_texto, rect_texto)
-
-def carregar_animacao(caminho_base, prefixo_arquivo, num_frames, novo_tamanho):
-    """Carrega uma sequência de imagens e a retorna como uma lista de surfaces."""
-    frames = []
-    for i in range(num_frames):
-        nome_arquivo = f"{prefixo_arquivo}{i}.png"
-        caminho_completo = os.path.join(caminho_base, nome_arquivo)
-        try:
-            imagem = pygame.image.load(caminho_completo).convert_alpha()
-            frames.append(pygame.transform.scale(imagem, novo_tamanho))
-        except pygame.error as e:
-            print(f"Erro ao carregar frame '{caminho_completo}': {e}")
-            fallback_surface = pygame.Surface(novo_tamanho)
-            fallback_surface.fill(VERMELHO)
-            frames.append(fallback_surface)
-    return frames
 
 def desenhar_botao_mudo(surface, rect, muted):
     """Desenha o ícone de mudo/som."""
@@ -58,7 +41,7 @@ def exibir_tela_final(tela, cor, msg1, msg2, fontes, rect_botao_mudo, som_mutado
 
 def desenhar_hud(tela, hud_vars, professor, fase, tempo_restante, fontes, icones, rect_botao_mudo, som_mutado):
     """Desenha toda a barra lateral (HUD)."""
-    from src.settings import LARGURA_TELA, ALTURA_TELA, LARGURA_BARRA_LATERAL, AZUL_CIN, BRANCO, AMARELO, VERMELHO, PRETO
+    from src.utils.constantes import LARGURA_TELA, ALTURA_TELA, LARGURA_BARRA_LATERAL, AZUL_CIN, BRANCO, AMARELO, VERMELHO, PRETO
 
     superficie_barra_lateral = pygame.Surface((LARGURA_BARRA_LATERAL, ALTURA_TELA))
     superficie_barra_lateral.fill(AZUL_CIN)
@@ -103,9 +86,3 @@ def desenhar_hud(tela, hud_vars, professor, fase, tempo_restante, fontes, icones
         y_offset += 15
 
     tela.blit(superficie_barra_lateral, (LARGURA_TELA, 0))
-
-class SomFalso:
-    """Classe substituta para sons, caso o carregamento falhe."""
-    def play(self, *args): pass
-    def stop(self): pass
-    def set_volume(self, v): pass

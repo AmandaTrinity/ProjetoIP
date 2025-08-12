@@ -1,7 +1,7 @@
 # src/level.py
 import pygame
 import random
-from src.settings import *
+from src.utils.constantes import *
 from src.sprites import Parede, Professor, Aluno
 from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
 from src.coletaveis.garrafaPitu import GarrafaPitu
