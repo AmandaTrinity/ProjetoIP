@@ -4,7 +4,7 @@ import sys
 import os
 from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
-from src.level import setup_fase
+from src.mecanicas.level import setup_fase
 from src.utils.audio import SomFalso, toggle_mute
 from src.utils.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 

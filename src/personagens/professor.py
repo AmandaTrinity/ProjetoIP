@@ -1,7 +1,7 @@
 import pygame
 from src.utils.constantes import TAMANHO_BLOCO, VELOCIDADE_JOGADOR, DIRETORIO_IMAGENS
 from src.utils.setup import carregar_animacao
-from src.movimento.movimento import mover_personagem
+from src.mecanicas.movimento import mover_personagem
 
 class Professor(pygame.sprite.Sprite):
     def __init__(self, x, y, som_andando, sons_efeitos):
