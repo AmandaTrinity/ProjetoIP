@@ -7,28 +7,7 @@ from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
 from src.utils.audio import SomFalso, toggle_mute
 from src.utils.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
-
-# --- FUNÇÕES PARA GERENCIAR RECORDE ---
-ARQUIVO_PONTUACAO = 'melhores_tempos.txt'
-
-def carregar_melhores_tempos():
-    """Carrega os dois melhores tempos a partir de um arquivo."""
-    if not os.path.exists(ARQUIVO_PONTUACAO):
-        return [float('inf'), float('inf')]
-    try:
-        with open(ARQUIVO_PONTUACAO, 'r') as f:
-            tempos = [float(linha.strip()) for linha in f]
-            while len(tempos) < 2:
-                tempos.append(float('inf'))
-            return sorted(tempos)[:2]
-    except (ValueError, IndexError):
-        return [float('inf'), float('inf')]
-
-def salvar_melhores_tempos(tempos):
-    """Salva os dois melhores tempos no arquivo."""
-    with open(ARQUIVO_PONTUACAO, 'w') as f:
-        for tempo in sorted(tempos)[:2]:
-            f.write(f"{tempo}\n")
+from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 
 def main():
     pygame.init()
