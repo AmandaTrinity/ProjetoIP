@@ -5,9 +5,10 @@ import os
 from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
-from src.utils.audio import SomFalso, toggle_mute
+from src.utils.audio import toggle_mute, carregar_sons
 from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
+from src.utils.setup import carregar_recursos_globais
 
 def main():
     pygame.init()
@@ -18,39 +19,8 @@ def main():
     relogio = pygame.time.Clock()
 
     # --- CARREGAMENTO DE RECURSOS GLOBAIS ---
-    try:
-        ss_telhados = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'telhadoscoloridos.png')).convert()
-        lista_telhados = [ss_telhados.subsurface((i * 40, 0), (40, 40)) for i in range(6)]
-        fundo_img = pygame.transform.scale(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'chãojogo.jpg')).convert(), (LARGURA_TELA, ALTURA_TELA))
-        spritesheet_porta = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'porta_entrada_saida.png')).convert_alpha()
-        lista_sprites_porta = [spritesheet_porta.subsurface((i * TAMANHO_BLOCO, 0), (TAMANHO_BLOCO, TAMANHO_BLOCO)) for i in range(4)]
-        caminho_fonte = os.path.join(DIRETORIO_FONTES, 'PressStart2P-Regular.ttf')
-        fontes = {
-            'grande': pygame.font.Font(caminho_fonte, 36), 'media': pygame.font.Font(caminho_fonte, 26),
-            'pequena': pygame.font.Font(caminho_fonte, 16), 'mini': pygame.font.Font(caminho_fonte, 12),
-            'minuscula': pygame.font.Font(caminho_fonte, 8)
-        }
-        icones_hud = {
-            'sombrinha': pygame.transform.scale(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'sprite_sheetsombrinha.png')).convert_alpha().subsurface((0,0), (26,26)), (40, 40)),
-            'pitu': pygame.transform.scale(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'pitu.png')).convert_alpha().subsurface((0,0), (60,190)), (20, 50)),
-            'mascara': pygame.transform.scale(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'FantasiaVampiro 19x25.png')).convert_alpha().subsurface((0,0), (19,25)), (35, 45))
-        }
-    except pygame.error as e:
-        print(f"Erro fatal ao carregar assets essenciais: {e}")
-        pygame.quit()
-        sys.exit()
-
-    # Carregamento de sons
-    try:
-        sons = {
-            'inicio': pygame.mixer.Sound(os.path.join(DIRETORIO_SONS, 'musica_inicio.mp3')),
-            'jogo': pygame.mixer.Sound(os.path.join(DIRETORIO_SONS, 'musica_jogo.mp3')),
-            'andando': pygame.mixer.Sound(os.path.join(DIRETORIO_SONS, 'andando.mp3')),
-            'sombrinha': pygame.mixer.Sound(os.path.join(DIRETORIO_SONS, 'som_sombrinha.wav'))
-        }
-    except pygame.error:
-        print("Aviso: Um ou mais sons não puderam ser carregados. Usando sons falsos.")
-        sons = {k: SomFalso() for k in ['inicio', 'jogo', 'andando', 'sombrinha']}
+    recursos_visuais = carregar_recursos_globais()
+    sons = carregar_sons()
 
     pygame.mixer.set_num_channels(3)
     canal_musica = pygame.mixer.Channel(0)
@@ -110,7 +80,7 @@ def main():
                     elif evento.key == pygame.K_RETURN:
                         if estado_jogo == "TELA_INICIAL":
                             fase_atual = 1
-                            elementos_fase = setup_fase(fase_atual, lista_telhados, sons)
+                            elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
                             tempo_inicio_jogo = tempo_atual
                             tempo_total_corrida = 0.0
                             tempo_inicio_fase_atual = tempo_atual
@@ -125,19 +95,19 @@ def main():
         if estado_jogo == "TELA_INICIAL":
             if not canal_musica.get_busy():
                 canal_musica.play(sons['inicio'], -1)
-            desenhar_tela_inicial(tela, fontes, melhores_tempos, som_mutado, botao_mudo_rect_menu)
+            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, som_mutado, botao_mudo_rect_menu)
 
         ### NOVO ### - Estado para desenhar o pop-up de confirmação
         elif estado_jogo == "CONFIRMAR_RESET":
             # Primeiro, desenha a tela inicial por baixo para criar o efeito de pop-up
-            desenhar_tela_inicial(tela, fontes, melhores_tempos, som_mutado, botao_mudo_rect_menu)
-            desenhar_tela_confirmacao_reset(tela, fontes)
+            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, som_mutado, botao_mudo_rect_menu)
+            desenhar_tela_confirmacao_reset(tela, recursos_visuais['fontes'])
 
         elif estado_jogo == "TRANSICAO_FASE":
             tela.fill(PRETO)
-            desenhar_texto(f"FASE {fase_atual}", fontes['grande'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2, True)
+            desenhar_texto(f"FASE {fase_atual}", recursos_visuais['fontes']['grande'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2, True)
             if tempo_atual - tempo_inicio_transicao > 3000:
-                elementos_fase = setup_fase(fase_atual, lista_telhados, sons)
+                elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
                 tempo_inicio_jogo = tempo_atual
                 porta_animando, porta_frame_atual = False, 0
                 estado_jogo = "JOGANDO"
@@ -150,7 +120,7 @@ def main():
             }
             cor, msg1, msg2 = mensagens_fim[estado_jogo]
             tempo_a_exibir = tempo_total_corrida if estado_jogo == "VITORIA" else None
-            exibir_tela_final(tela, cor, msg1, msg2, fontes, botao_mudo_rect_menu, som_mutado, tempo_partida=tempo_a_exibir)
+            exibir_tela_final(tela, cor, msg1, msg2, recursos_visuais['fontes'], botao_mudo_rect_menu, som_mutado, tempo_partida=tempo_a_exibir)
 
         elif estado_jogo == "JOGANDO":
             professor = elementos_fase['professor']
@@ -181,8 +151,8 @@ def main():
             
             if porta_animando and tempo_atual - porta_ultimo_update > 200:
                 porta_ultimo_update = tempo_atual
-                porta_frame_atual = min(porta_frame_atual + 1, len(lista_sprites_porta) - 1)
-                if porta_frame_atual == len(lista_sprites_porta) - 1:
+                porta_frame_atual = min(porta_frame_atual + 1, len(recursos_visuais['lista_sprites_porta']) - 1)
+                if porta_frame_atual == len(recursos_visuais['lista_sprites_porta']) - 1:
                     porta_animando = False
             
             tempo_restante = TEMPO_TOTAL_JOGO - (tempo_atual - tempo_inicio_jogo) / 1000
@@ -207,14 +177,14 @@ def main():
                     salvar_melhores_tempos(melhores_tempos)
                     estado_jogo = "VITORIA"
 
-            tela.blit(fundo_img, (0, 0))
-            tela.blit(lista_sprites_porta[3], elementos_fase['pos_entrada'])
-            tela.blit(lista_sprites_porta[porta_frame_atual], elementos_fase['pos_saida'])
+            tela.blit(recursos_visuais['fundo_img'], (0, 0))
+            tela.blit(recursos_visuais['lista_sprites_porta'][3], elementos_fase['pos_entrada'])
+            tela.blit(recursos_visuais['lista_sprites_porta'][porta_frame_atual], elementos_fase['pos_saida'])
             elementos_fase['paredes'].draw(tela)
             elementos_fase['todos_sprites'].draw(tela)
             elementos_fase['itens'].draw(tela)
             elementos_fase['obstaculos'].draw(tela)
-            desenhar_hud(tela, elementos_fase['hud_vars'], professor, fase_atual, tempo_restante, fontes, icones_hud, botao_mudo_rect_hud, som_mutado)
+            desenhar_hud(tela, elementos_fase['hud_vars'], professor, fase_atual, tempo_restante, recursos_visuais['fontes'], recursos_visuais['icones_hud'], botao_mudo_rect_hud, som_mutado)
 
         pygame.display.flip()
         relogio.tick(FPS)
