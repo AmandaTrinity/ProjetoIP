@@ -2,7 +2,9 @@
 import pygame
 import random
 from src.utils.constantes import *
-from src.sprites import Parede, Professor, Aluno
+from src.labirinto.labirinto import Parede
+from src.personagens.professor import Professor
+from src.personagens.aluno import Aluno
 from src.coletaveis.fantasiaCarnaval import FantasiaCarnaval
 from src.coletaveis.garrafaPitu import GarrafaPitu
 from src.coletaveis.sombrinha import SombrinhaFrevo
