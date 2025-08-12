@@ -58,7 +58,7 @@ LAYOUT_LABIRINTO = [
 
 # --- Diretórios de Assets ---
 # Identifica o diretório raiz do projeto (JornadaParaOCarnaval/)
-DIRETORIO_RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIRETORIO_RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DIRETORIO_ASSETS = os.path.join(DIRETORIO_RAIZ, 'assets')
 DIRETORIO_IMAGENS = os.path.join(DIRETORIO_ASSETS, 'imagens')
 DIRETORIO_SONS = os.path.join(DIRETORIO_ASSETS, 'sons')

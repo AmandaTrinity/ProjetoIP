@@ -2,11 +2,10 @@
 import pygame
 import sys
 import os
-from src.settings import *
-from src.utils import (
-    desenhar_texto, desenhar_botao_mudo, exibir_tela_final, desenhar_hud, SomFalso
-)
+from src.utils.constantes import *
+from src.utils.desenho import desenhar_texto, desenhar_hud, desenhar_botao_mudo, exibir_tela_final
 from src.level import setup_fase
+from src.utils.setup import SomFalso
 
 # --- FUNÇÕES PARA GERENCIAR RECORDE ---
 ARQUIVO_PONTUACAO = 'melhores_tempos.txt'

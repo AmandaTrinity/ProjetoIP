@@ -1,6 +1,6 @@
 import pygame
 import os
-from src.settings import *
+from src.utils.constantes import *
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, nome, pos, img_path, n, w, h, new_w=None, new_h=None):

@@ -1,6 +1,6 @@
 import pygame
 from src.coletaveis.item import Item
-from src.settings import *
+from src.utils.constantes import *
 
 class SombrinhaFrevo(Item):
     def __init__(self, pos):

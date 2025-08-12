@@ -1,8 +1,8 @@
 # src/sprites.py
 import pygame
 import random  # <- ESTA É A LINHA QUE FALTAVA
-from src.settings import *
-from src.utils import carregar_animacao
+from src.utils.constantes import *
+from src.utils.setup import carregar_animacao
 
 # --- Classes de Sprites ---
 class Professor(pygame.sprite.Sprite):
