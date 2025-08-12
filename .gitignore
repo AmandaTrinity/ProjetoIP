@@ -1,3 +1,22 @@
+# Arquivos de dados gerados pelo jogo
+# Ignora a pasta que contém os melhores tempos e outros dados de save.
+data/
+
+# Arquivos de cache e compilados do Python
 __pycache__/
-*.__pyc
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# Arquivos de sistema operacional
 .DS_Store
+Thumbs.db
+
+# Arquivos de configuração de IDEs
+.vscode/
+
