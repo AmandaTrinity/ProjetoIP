@@ -1,0 +1,56 @@
+import pygame
+import sys
+from src.utils.audio import toggle_mute
+from src.utils.constantes import LARGURA_TELA
+
+def processar_eventos(nome_estado_atual, config_audio):
+    """
+    Processa todos os eventos de input (teclado, mouse, fechar janela)
+    e retorna um dicionário com os comandos para o loop principal.
+    """
+    comandos_usuario = {'acao': None, 'som_mutado': config_audio['som_mutado']}
+
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        # Eventos de clique do mouse (para o botão de mudo)
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            # Determina qual rect do botão de mudo está ativo (o do menu ou o da HUD)
+            if nome_estado_atual != "JOGANDO":
+                botao_mudo_rect = config_audio['rect_menu']
+            else:
+                hud_rect = config_audio['rect_hud']
+                botao_mudo_rect = pygame.Rect(LARGURA_TELA + hud_rect.x, hud_rect.y, hud_rect.width, hud_rect.height)
+            
+            if botao_mudo_rect.collidepoint(evento.pos):
+                comandos_usuario['som_mutado'] = toggle_mute(comandos_usuario['som_mutado'])
+
+        # Eventos de teclado
+        if evento.type == pygame.KEYDOWN:
+            if nome_estado_atual == "CONFIRMAR_RESET":
+                if evento.key == pygame.K_RETURN:
+                    comandos_usuario['acao'] = 'RESETAR_PONTUACAO'
+                elif evento.key == pygame.K_ESCAPE:
+                    comandos_usuario['acao'] = 'CANCELAR_RESET'
+            
+            else: # Lógica para os outros estados
+                if evento.key == pygame.K_m:
+                    comandos_usuario['som_mutado'] = toggle_mute(comandos_usuario['som_mutado'])
+                elif evento.key == pygame.K_ESCAPE:
+                    comandos_usuario['acao'] = 'VOLTAR_MENU'
+                elif evento.key == pygame.K_r and nome_estado_atual == "TELA_INICIAL":
+                    comandos_usuario['acao'] = 'CONFIRMAR_RESET'
+                elif evento.key == pygame.K_RETURN:
+                    if nome_estado_atual == "TELA_INICIAL":
+                        comandos_usuario['acao'] = 'INICIAR_JOGO'
+                    elif nome_estado_atual in ["VITORIA", "DERROTA", "DERROTA_OBSTACULO"]:
+                        comandos_usuario['acao'] = 'VOLTAR_MENU'
+
+    # Captura de movimento contínuo (fora do loop de eventos)
+    teclas_pressionadas = pygame.key.get_pressed()
+    comandos_usuario['direcao_x'] = (teclas_pressionadas[pygame.K_RIGHT] or teclas_pressionadas[pygame.K_d]) - (teclas_pressionadas[pygame.K_LEFT] or teclas_pressionadas[pygame.K_a])
+    comandos_usuario['direcao_y'] = (teclas_pressionadas[pygame.K_DOWN] or teclas_pressionadas[pygame.K_s]) - (teclas_pressionadas[pygame.K_UP] or teclas_pressionadas[pygame.K_w])
+
+    return comandos_usuario

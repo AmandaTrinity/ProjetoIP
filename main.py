@@ -9,6 +9,7 @@ from src.utils.audio import toggle_mute, carregar_sons
 from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 from src.utils.setup import carregar_recursos_globais
+from src.mecanicas.eventos import processar_eventos
 
 def main():
     pygame.init()
@@ -26,10 +27,12 @@ def main():
     canal_musica = pygame.mixer.Channel(0)
     
     # --- VARIÁVEIS DE ESTADO DO JOGO ---
-    som_mutado = False
-    botao_mudo_rect_hud = pygame.Rect(LARGURA_BARRA_LATERAL - 45, 10, 35, 30)
-    botao_mudo_rect_menu = pygame.Rect(10, 10, 35, 30)
-    
+    estado_som = {
+        'som_mutado': False,
+        'rect_hud': pygame.Rect(LARGURA_BARRA_LATERAL - 45, 10, 35, 30),
+        'rect_menu': pygame.Rect(10, 10, 35, 30)
+    }
+
     melhores_tempos = carregar_melhores_tempos()
     tempo_total_corrida = 0.0
     tempo_inicio_fase_atual = 0
@@ -47,60 +50,43 @@ def main():
     # --- LOOP PRINCIPAL ---
     while True:
         tempo_atual = pygame.time.get_ticks()
-        
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                rect_clicado_mudo = botao_mudo_rect_menu if estado_jogo != "JOGANDO" else pygame.Rect(LARGURA_TELA + botao_mudo_rect_hud.x, botao_mudo_rect_hud.y, botao_mudo_rect_hud.width, botao_mudo_rect_hud.height)
-                if rect_clicado_mudo.collidepoint(evento.pos):
-                    som_mutado = toggle_mute(som_mutado)
+        comandos_usuario = processar_eventos(estado_jogo, estado_som)
+        estado_som['som_mutado'] = comandos_usuario['som_mutado']
 
-            if evento.type == pygame.KEYDOWN:
-                ### ALTERADO ### - Lógica de teclado agora considera o estado de confirmação
-                if estado_jogo == "CONFIRMAR_RESET":
-                    if evento.key == pygame.K_RETURN: # Confirma o reset
-                        melhores_tempos = [float('inf'), float('inf')]
-                        salvar_melhores_tempos(melhores_tempos)
-                        estado_jogo = "TELA_INICIAL"
-                    elif evento.key == pygame.K_ESCAPE: # Cancela o reset
-                        estado_jogo = "TELA_INICIAL"
-                
-                else: # Lógica de teclado para os outros estados
-                    if evento.key == pygame.K_m:
-                        som_mutado = toggle_mute(som_mutado)
-                    elif evento.key == pygame.K_ESCAPE:
-                        canal_musica.stop()
-                        pygame.mixer.Channel(2).stop()
-                        estado_jogo = "TELA_INICIAL"
-                    elif evento.key == pygame.K_r and estado_jogo == "TELA_INICIAL":
-                        estado_jogo = "CONFIRMAR_RESET" # Apenas muda para o estado de confirmação
-                    elif evento.key == pygame.K_RETURN:
-                        if estado_jogo == "TELA_INICIAL":
-                            fase_atual = 1
-                            elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
-                            tempo_inicio_jogo = tempo_atual
-                            tempo_total_corrida = 0.0
-                            tempo_inicio_fase_atual = tempo_atual
-                            porta_animando, porta_frame_atual = False, 0
-                            canal_musica.stop()
-                            canal_musica.play(sons['jogo'], -1)
-                            estado_jogo = "JOGANDO"
-                        elif estado_jogo in ["VITORIA", "DERROTA", "DERROTA_OBSTACULO"]:
-                            estado_jogo = "TELA_INICIAL"
+        # --- ATUALIZAÇÃO DE ESTADO BASEADO NOS COMANDOS ---
+        acao = comandos_usuario.get('acao')
+        if acao == 'VOLTAR_MENU':
+            canal_musica.stop(); pygame.mixer.Channel(2).stop()
+            estado_jogo = "TELA_INICIAL"
+        elif acao == 'INICIAR_JOGO':
+            fase_atual = 1
+            elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
+            tempo_inicio_jogo = tempo_atual
+            tempo_total_corrida = 0.0
+            tempo_inicio_fase_atual = tempo_atual
+            porta_animando, porta_frame_atual = False, 0
+            canal_musica.stop()
+            canal_musica.play(sons['jogo'], -1)
+            estado_jogo = "JOGANDO"
+        elif acao == 'CONFIRMAR_RESET':
+            estado_jogo = "CONFIRMAR_RESET"
+        elif acao == 'RESETAR_PONTUACAO':
+            melhores_tempos = [float('inf'), float('inf')]
+            salvar_melhores_tempos(melhores_tempos)
+            estado_jogo = "TELA_INICIAL"
+        elif acao == 'CANCELAR_RESET':
+            estado_jogo = "TELA_INICIAL"
         
         # --- LÓGICA DE ESTADOS ---
         if estado_jogo == "TELA_INICIAL":
             if not canal_musica.get_busy():
                 canal_musica.play(sons['inicio'], -1)
-            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, som_mutado, botao_mudo_rect_menu)
+            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
 
         ### NOVO ### - Estado para desenhar o pop-up de confirmação
         elif estado_jogo == "CONFIRMAR_RESET":
             # Primeiro, desenha a tela inicial por baixo para criar o efeito de pop-up
-            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, som_mutado, botao_mudo_rect_menu)
+            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
             desenhar_tela_confirmacao_reset(tela, recursos_visuais['fontes'])
 
         elif estado_jogo == "TRANSICAO_FASE":
@@ -120,13 +106,11 @@ def main():
             }
             cor, msg1, msg2 = mensagens_fim[estado_jogo]
             tempo_a_exibir = tempo_total_corrida if estado_jogo == "VITORIA" else None
-            exibir_tela_final(tela, cor, msg1, msg2, recursos_visuais['fontes'], botao_mudo_rect_menu, som_mutado, tempo_partida=tempo_a_exibir)
+            exibir_tela_final(tela, cor, msg1, msg2, recursos_visuais['fontes'], estado_som['rect_menu'], estado_som['som_mutado'], tempo_partida=tempo_a_exibir)
 
         elif estado_jogo == "JOGANDO":
             professor = elementos_fase['professor']
-            teclas = pygame.key.get_pressed()
-            dx = (teclas[pygame.K_RIGHT] or teclas[pygame.K_d]) - (teclas[pygame.K_LEFT] or teclas[pygame.K_a])
-            dy = (teclas[pygame.K_DOWN] or teclas[pygame.K_s]) - (teclas[pygame.K_UP] or teclas[pygame.K_w])
+            dx, dy = comandos_usuario['direcao_x'], comandos_usuario['direcao_y']
             if professor.drunk: dx, dy = -dx, -dy
             
             movimento_real = professor.mover(dx, dy, elementos_fase['paredes'])
@@ -184,7 +168,7 @@ def main():
             elementos_fase['todos_sprites'].draw(tela)
             elementos_fase['itens'].draw(tela)
             elementos_fase['obstaculos'].draw(tela)
-            desenhar_hud(tela, elementos_fase['hud_vars'], professor, fase_atual, tempo_restante, recursos_visuais['fontes'], recursos_visuais['icones_hud'], botao_mudo_rect_hud, som_mutado)
+            desenhar_hud(tela, elementos_fase['hud_vars'], professor, fase_atual, tempo_restante, recursos_visuais['fontes'], recursos_visuais['icones_hud'], estado_som['rect_hud'], estado_som['som_mutado'])
 
         pygame.display.flip()
         relogio.tick(FPS)
