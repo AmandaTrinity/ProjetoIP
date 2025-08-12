@@ -1,7 +1,6 @@
-# src/settings.py
+# Configurações e Constantes
 import os
 
-# --- Configurações e Constantes ---
 # Cores
 PRETO = (0, 0, 0)
 BRANCO = (255, 255, 255)
@@ -37,7 +36,7 @@ DURACAO_PITU_FASE2_MS = 9000
 DURACAO_PITU_FASE3_MS = 11000
 TEMPO_TELA_FINAL_MS = 4000 # 4 segundos
 
-# --- Estrutura do Labirinto ---
+# Estrutura do Labirinto 
 LAYOUT_LABIRINTO = [
     "PPPPPPPPPPPPPPPPPPPP",
     "PECCCCCCCCPCCCCCCSPP",
@@ -56,7 +55,7 @@ LAYOUT_LABIRINTO = [
     "PPPPPPPPPPPPPPPPPPPP",
 ]
 
-# --- Diretórios de Assets ---
+# Diretórios
 # Identifica o diretório raiz do projeto (JornadaParaOCarnaval/)
 DIRETORIO_RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DIRETORIO_ASSETS = os.path.join(DIRETORIO_RAIZ, 'assets')
@@ -64,5 +63,5 @@ DIRETORIO_IMAGENS = os.path.join(DIRETORIO_ASSETS, 'imagens')
 DIRETORIO_SONS = os.path.join(DIRETORIO_ASSETS, 'sons')
 DIRETORIO_FONTES = os.path.join(DIRETORIO_ASSETS, 'fontes')
 
-# --- Configuração de Áudio ---
+# Configuração de Áudio
 VOLUMES_PADRAO = {'musica': 0.6, 'efeitos': 0.7, 'passos': 0.5}

@@ -161,13 +161,13 @@ def main():
             
             movimento_real = professor.mover(dx, dy, elementos_fase['paredes'])
             professor.update(tempo_atual, movimento_real)
-            elementos_fase['alunos'].update(tempo_atual)
+            elementos_fase['obstaculos'].update(tempo_atual)
             elementos_fase['itens'].update()
 
             for item in pygame.sprite.spritecollide(professor, elementos_fase['itens'], False, pygame.sprite.collide_mask):
                 professor.coletar_item(item, elementos_fase['hud_vars'])
             
-            if not professor.invisivel and pygame.sprite.spritecollide(professor, elementos_fase['alunos'], False, pygame.sprite.collide_mask):
+            if not professor.invisivel and pygame.sprite.spritecollide(professor, elementos_fase['obstaculos'], False, pygame.sprite.collide_mask):
                 if fase_atual == 3:
                     canal_musica.stop(); pygame.mixer.Channel(2).stop(); estado_jogo = "DERROTA_OBSTACULO"
                 else:
@@ -213,7 +213,7 @@ def main():
             elementos_fase['paredes'].draw(tela)
             elementos_fase['todos_sprites'].draw(tela)
             elementos_fase['itens'].draw(tela)
-            elementos_fase['alunos'].draw(tela)
+            elementos_fase['obstaculos'].draw(tela)
             desenhar_hud(tela, elementos_fase['hud_vars'], professor, fase_atual, tempo_restante, fontes, icones_hud, botao_mudo_rect_hud, som_mutado)
 
         pygame.display.flip()
