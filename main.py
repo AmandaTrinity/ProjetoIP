@@ -40,7 +40,7 @@ def main():
     estado_jogo = "TELA_INICIAL"
     fase_atual = 1
     tempo_inicio_transicao = 0
-    tempo_inicio_jogo = 0
+    ponto_referencia_timer_regressivo = 0
     porta_animando = False
     porta_frame_atual = 0
     porta_ultimo_update = 0
@@ -61,7 +61,7 @@ def main():
         elif acao == 'INICIAR_JOGO':
             fase_atual = 1
             elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
-            tempo_inicio_jogo = tempo_atual
+            ponto_referencia_timer_regressivo = tempo_atual
             tempo_total_corrida = 0.0
             tempo_inicio_fase_atual = tempo_atual
             porta_animando, porta_frame_atual = False, 0
@@ -94,7 +94,7 @@ def main():
             desenhar_texto(f"FASE {fase_atual}", recursos_visuais['fontes']['grande'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2, True)
             if tempo_atual - tempo_inicio_transicao > 3000:
                 elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
-                tempo_inicio_jogo = tempo_atual
+                ponto_referencia_timer_regressivo = tempo_atual
                 porta_animando, porta_frame_atual = False, 0
                 estado_jogo = "JOGANDO"
 
@@ -104,17 +104,17 @@ def main():
                 "DERROTA": (VERMELHO, "TEMPO ESGOTADO!", "Mais um ano no CIn..."),
                 "DERROTA_OBSTACULO": (VERMELHO, "GAME OVER!", "Você não sobreviveu à multidão.")
             }
-            cor, msg1, msg2 = mensagens_fim[estado_jogo]
+            cor, mensagem_principal, mensagem_secundaria = mensagens_fim[estado_jogo]
             tempo_a_exibir = tempo_total_corrida if estado_jogo == "VITORIA" else None
-            exibir_tela_final(tela, cor, msg1, msg2, recursos_visuais['fontes'], estado_som['rect_menu'], estado_som['som_mutado'], tempo_partida=tempo_a_exibir)
+            exibir_tela_final(tela, cor, mensagem_principal, mensagem_secundaria, recursos_visuais['fontes'], estado_som['rect_menu'], estado_som['som_mutado'], tempo_partida=tempo_a_exibir)
 
         elif estado_jogo == "JOGANDO":
             professor = elementos_fase['professor']
-            dx, dy = comandos_usuario['direcao_x'], comandos_usuario['direcao_y']
-            if professor.drunk: dx, dy = -dx, -dy
+            deslocamento_x, deslocamento_y = comandos_usuario['direcao_x'], comandos_usuario['direcao_y']
+            if professor.drunk: deslocamento_x, deslocamento_y = -deslocamento_x, -deslocamento_y
             
-            movimento_real = professor.mover(dx, dy, elementos_fase['paredes'])
-            professor.update(tempo_atual, movimento_real)
+            personagem_se_moveu = professor.mover(deslocamento_x, deslocamento_y, elementos_fase['paredes'])
+            professor.update(tempo_atual, personagem_se_moveu)
             elementos_fase['obstaculos'].update(tempo_atual)
             elementos_fase['itens'].update()
 
@@ -125,9 +125,9 @@ def main():
                 if fase_atual == 3:
                     canal_musica.stop(); pygame.mixer.Channel(2).stop(); estado_jogo = "DERROTA_OBSTACULO"
                 else:
-                    tempo_inicio_jogo -= 2000
-                    professor.hitbox.x -= dx * professor.velocidade * 4
-                    professor.hitbox.y -= dy * professor.velocidade * 4
+                    ponto_referencia_timer_regressivo -= 2000
+                    professor.hitbox.x -= deslocamento_x * professor.velocidade * 4
+                    professor.hitbox.y -= deslocamento_y * professor.velocidade * 4
             
             if len(professor.itens_coletados) == 3 and not porta_animando and porta_frame_atual == 0:
                 porta_animando = True
@@ -139,7 +139,7 @@ def main():
                 if porta_frame_atual == len(recursos_visuais['lista_sprites_porta']) - 1:
                     porta_animando = False
             
-            tempo_restante = TEMPO_TOTAL_JOGO - (tempo_atual - tempo_inicio_jogo) / 1000
+            tempo_restante = TEMPO_TOTAL_JOGO - (tempo_atual - ponto_referencia_timer_regressivo) / 1000
             if tempo_restante <= 0:
                 canal_musica.stop(); pygame.mixer.Channel(2).stop(); estado_jogo = "DERROTA"
             
