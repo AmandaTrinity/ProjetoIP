@@ -22,23 +22,6 @@ def desenhar_botao_mudo(surface, rect, muted):
     if muted:
         pygame.draw.line(surface, VERMELHO, rect.topleft, rect.bottomright, 3)
 
-def exibir_tela_final(tela, cor, msg1, msg2, fontes, rect_botao_mudo, som_mutado, tempo_partida=None):
-    """Desenha uma tela genérica de fim de jogo."""
-    tela.fill(cor)
-    largura_total = tela.get_width()
-    altura_total = tela.get_height()
-
-    desenhar_texto(msg1, fontes['grande'], BRANCO, tela, largura_total // 2, altura_total // 3, True)
-    desenhar_texto(msg2, fontes['media'], BRANCO, tela, largura_total // 2, altura_total // 2, True)
-
-    # Exibe o tempo da partida, se fornecido (apenas na tela de vitória)
-    if tempo_partida is not None:
-        texto_tempo = f"Seu tempo: {tempo_partida:.2f} segundos"
-        desenhar_texto(texto_tempo, fontes['pequena'], AMARELO, tela, largura_total // 2, altura_total * 2 // 3, True)
-
-    desenhar_texto("Pressione ENTER para voltar", fontes['pequena'], BRANCO, tela, largura_total // 2, altura_total * 5 // 6, True)
-    desenhar_botao_mudo(tela, rect_botao_mudo, som_mutado)
-
 def desenhar_hud(tela, hud_vars, professor, fase, tempo_restante, fontes, icones, rect_botao_mudo, som_mutado):
     """Desenha toda a barra lateral (HUD)."""
     from src.utils.constantes import LARGURA_TELA, ALTURA_TELA, LARGURA_BARRA_LATERAL, AZUL_CIN, BRANCO, AMARELO, VERMELHO, PRETO

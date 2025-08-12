@@ -3,9 +3,10 @@ import pygame
 import sys
 import os
 from src.utils.constantes import *
-from src.utils.desenho import desenhar_texto, desenhar_hud, desenhar_botao_mudo, exibir_tela_final
+from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.level import setup_fase
 from src.utils.audio import SomFalso, toggle_mute
+from src.utils.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
 
 # --- FUNÇÕES PARA GERENCIAR RECORDE ---
 ARQUIVO_PONTUACAO = 'melhores_tempos.txt'
@@ -28,20 +29,6 @@ def salvar_melhores_tempos(tempos):
     with open(ARQUIVO_PONTUACAO, 'w') as f:
         for tempo in sorted(tempos)[:2]:
             f.write(f"{tempo}\n")
-
-### NOVO ### - Função para desenhar a tela inicial, evitando repetição de código
-def desenhar_tela_inicial(tela, fontes, melhores_tempos, som_mutado, botao_mudo_rect_menu):
-    """Desenha todos os elementos da tela inicial."""
-    tela.fill(PRETO)
-    desenhar_texto(TITULO_JOGO, fontes['grande'], AMARELO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 5, True)
-    desenhar_texto("Pressione ENTER para começar", fontes['pequena'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA * 3.5 / 5, True)
-    desenhar_texto("Pressione ESC para voltar ao MENU", fontes['mini'], CINZA, tela, LARGURA_TOTAL / 2, ALTURA_TELA * 4.0 / 5, True)
-    desenhar_botao_mudo(tela, botao_mudo_rect_menu, som_mutado)
-    desenhar_texto("Tempo mais rápido", fontes['media'], AMARELO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2 - 40, True)
-    for i, tempo in enumerate(melhores_tempos):
-        texto_tempo = f"{i+1}. {tempo:.2f}s" if tempo != float('inf') else f"{i+1}. --"
-        desenhar_texto(texto_tempo, fontes['pequena'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2 + (i * 30), True)
-    desenhar_texto("Pressione R para resetar o tempo", fontes['pequena'], VERMELHO, tela, LARGURA_TOTAL / 2, ALTURA_TELA * 4.5 / 5, True)
 
 def main():
     pygame.init()
@@ -165,15 +152,7 @@ def main():
         elif estado_jogo == "CONFIRMAR_RESET":
             # Primeiro, desenha a tela inicial por baixo para criar o efeito de pop-up
             desenhar_tela_inicial(tela, fontes, melhores_tempos, som_mutado, botao_mudo_rect_menu)
-
-            # Agora, desenha a caixa de diálogo por cima
-            popup_largura, popup_altura = 700, 200
-            popup_rect = pygame.Rect((LARGURA_TOTAL - popup_largura) / 2, (ALTURA_TELA - popup_altura) / 2, popup_largura, popup_altura)
-            pygame.draw.rect(tela, AZUL_CIN, popup_rect)
-            pygame.draw.rect(tela, BRANCO, popup_rect, 3) # Borda
-
-            desenhar_texto("Você tem certeza que deseja resetar o Ranking?", fontes['mini'], BRANCO, tela, popup_rect.centerx, popup_rect.centery - 30, True)
-            desenhar_texto("Sim (ENTER) / Não (ESC)", fontes['pequena'], AMARELO, tela, popup_rect.centerx, popup_rect.centery + 30, True)
+            desenhar_tela_confirmacao_reset(tela, fontes)
 
         elif estado_jogo == "TRANSICAO_FASE":
             tela.fill(PRETO)
