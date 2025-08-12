@@ -1,4 +1,3 @@
-# src/utils/pontuacao.py
 import os
 
 # O caminho para o arquivo de pontuação, dentro de uma pasta 'data' na raiz do projeto.

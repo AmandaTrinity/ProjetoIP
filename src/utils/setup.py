@@ -1,4 +1,3 @@
-# src/utils.py
 import pygame
 import os
 from src.utils.constantes import VERMELHO

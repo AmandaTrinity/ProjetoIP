@@ -50,4 +50,3 @@ class Parede(pygame.sprite.Sprite):
         self.image = random.choice(lista_telhados)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
-

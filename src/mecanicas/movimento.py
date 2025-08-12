@@ -1,4 +1,3 @@
-# src/movimento/movimento.py
 import pygame
 
 def mover_personagem(personagem, desloc_x, desloc_y, paredes):

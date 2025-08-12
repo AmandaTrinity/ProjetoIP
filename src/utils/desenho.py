@@ -1,4 +1,3 @@
-# src/utils/desenho.py
 import pygame
 from src.utils.constantes import VERMELHO, BRANCO, CINZA, AMARELO
 
