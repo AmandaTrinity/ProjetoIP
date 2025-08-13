@@ -1,4 +1,3 @@
-# src/level.py
 import pygame
 import random
 from src.utils.constantes import *

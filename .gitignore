@@ -1,6 +1,7 @@
 # Arquivos de dados gerados pelo jogo
 # Ignora a pasta que contém os melhores tempos e outros dados de save.
 data/
+melhores_tempos.txt
 
 # Arquivos de cache e compilados do Python
 __pycache__/

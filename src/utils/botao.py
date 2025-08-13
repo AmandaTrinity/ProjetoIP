@@ -1,4 +1,3 @@
-# Em src/utils/botao.py (VERIFIQUE SE O SEU FICHEIRO ESTÁ ASSIM)
 import pygame
 
 class Botao:
