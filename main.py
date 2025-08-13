@@ -196,6 +196,7 @@ def main():
                 tempo_total_corrida += tempo_fase
                 
                 if fase_atual < 3:
+                    canal_musica.unpause()
                     fase_atual += 1
                     estado_jogo = "TRANSICAO_FASE"
                     tempo_inicio_transicao = tempo_atual
