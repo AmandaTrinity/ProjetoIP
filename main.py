@@ -4,9 +4,10 @@ from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
 from src.utils.audio import carregar_sons
-from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_tela_confirmacao_reset
+from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_menu_popup
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 from src.utils.setup import carregar_recursos_globais
+from src.utils.botao import Botao 
 from src.mecanicas.eventos import processar_eventos
 
 def main():
@@ -20,6 +21,27 @@ def main():
     # CARREGAMENTO DE RECURSOS GLOBAIS
     recursos_visuais = carregar_recursos_globais()
     sons = carregar_sons()
+
+    botao_iniciar = Botao(
+        imagem_normal=recursos_visuais['imagens_botao_inicial']['normal'],
+        imagem_hover=recursos_visuais['imagens_botao_inicial']['clicado'], # Usamos a imagem de 'clicado' para o hover
+        pos_x=LARGURA_TOTAL / 2, 
+        pos_y=ALTURA_TELA / 2 + 40
+    )
+    
+    botao_menu = Botao(
+        imagem_normal=recursos_visuais['imagens_botao_menu']['normal'], # Pode usar a mesma imagem por enquanto
+        imagem_hover=recursos_visuais['imagens_botao_menu']['clicado'],
+        pos_x=LARGURA_TOTAL / 2,
+        pos_y=ALTURA_TELA / 2 + 120
+    ) 
+
+    botao_reiniciar = Botao(
+        imagem_normal=recursos_visuais['imagens_botao_reiniciar']['normal'], # Usando a arte do botão de menu como exemplo
+        imagem_hover=recursos_visuais['imagens_botao_reiniciar']['clicado'],
+        pos_x=LARGURA_TOTAL / 2,
+        pos_y=(ALTURA_TELA * 5 / 6) - 50
+    )
 
     pygame.mixer.set_num_channels(3)
     canal_musica = pygame.mixer.Channel(0)
@@ -47,8 +69,21 @@ def main():
 
     # LOOP PRINCIPAL
     while True:
+
         tempo_atual = pygame.time.get_ticks()
-        comandos_usuario = processar_eventos(estado_jogo, estado_som)
+
+        botoes_para_passar = None
+
+        if estado_jogo == "TELA_INICIAL":
+            botoes_para_passar = {'iniciar': botao_iniciar, 'menu': botao_menu}
+
+        elif estado_jogo == "TELA_MENU":
+            botoes_para_passar = None
+        
+        elif estado_jogo in ["VITORIA", "DERROTA", "DERROTA_OBSTACULO"]:
+            botoes_para_passar = {'reiniciar': botao_reiniciar}
+
+        comandos_usuario = processar_eventos(estado_jogo, estado_som, botoes_para_passar)
         estado_som['som_mutado'] = comandos_usuario['som_mutado']
 
         # ATUALIZAÇÃO DE ESTADO BASEADO NOS COMANDOS ---
@@ -56,6 +91,10 @@ def main():
         if acao == 'VOLTAR_MENU':
             canal_musica.stop(); pygame.mixer.Channel(2).stop()
             estado_jogo = "TELA_INICIAL"
+
+        elif acao == 'ABRIR_MENU':
+            estado_jogo = "TELA_MENU"
+
         elif acao == 'INICIAR_JOGO':
             fase_atual = 1
             elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
@@ -66,45 +105,54 @@ def main():
             canal_musica.stop()
             canal_musica.play(sons['jogo'], -1)
             estado_jogo = "JOGANDO"
-        elif acao == 'CONFIRMAR_RESET':
-            estado_jogo = "CONFIRMAR_RESET"
+
         elif acao == 'RESETAR_PONTUACAO':
             melhores_tempos = [float('inf'), float('inf')]
             salvar_melhores_tempos(melhores_tempos)
-            estado_jogo = "TELA_INICIAL"
-        elif acao == 'CANCELAR_RESET':
             estado_jogo = "TELA_INICIAL"
         
         # LÓGICA DE ESTADOS
         if estado_jogo == "TELA_INICIAL":
             if not canal_musica.get_busy():
                 canal_musica.play(sons['inicio'], -1)
-            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
+            desenhar_tela_inicial(tela, recursos_visuais, estado_som['som_mutado'], estado_som['rect_menu'], botao_iniciar, botao_menu)
 
-        # Estado para desenhar o pop-up de confirmação
-        elif estado_jogo == "CONFIRMAR_RESET":
-            # Primeiro, desenha a tela inicial por baixo para criar o efeito de pop-up
-            desenhar_tela_inicial(tela, recursos_visuais['fontes'], melhores_tempos, estado_som['som_mutado'], estado_som['rect_menu'])
-            desenhar_tela_confirmacao_reset(tela, recursos_visuais['fontes'])
+        elif estado_jogo == "TELA_MENU":
+            tela.blit(recursos_visuais['fundo_tela_inicial'], (0, 0))
+            desenhar_menu_popup(tela, recursos_visuais, melhores_tempos)
 
         elif estado_jogo == "TRANSICAO_FASE":
-            tela.fill(PRETO)
-            desenhar_texto(f"FASE {fase_atual}", recursos_visuais['fontes']['grande'], BRANCO, tela, LARGURA_TOTAL / 2, ALTURA_TELA / 2, True)
+            if fase_atual == 2:
+                tela.blit(recursos_visuais['fundo_transicao_1_2'], (0, 0))
+            if fase_atual == 3:
+                tela.blit(recursos_visuais['fundo_transicao_2_3'], (0, 0))
+
             if tempo_atual - tempo_inicio_transicao > 3000:
                 elementos_fase = setup_fase(fase_atual, recursos_visuais['lista_telhados'], sons)
                 ponto_referencia_timer_regressivo = tempo_atual
                 porta_animando, porta_frame_atual = False, 0
                 estado_jogo = "JOGANDO"
+                
+        if estado_jogo == "VITORIA":
+            tela.blit(recursos_visuais['fundo_vitoria'], (0, 0))
+            posicao_mouse = pygame.mouse.get_pos()
+            botao_reiniciar.atualizar_feedback(posicao_mouse)
+            botao_reiniciar.desenhar(tela)
 
-        elif estado_jogo in ["VITORIA", "DERROTA", "DERROTA_OBSTACULO"]:
-            mensagens_fim = {
-                "VITORIA": (VERDE, "VOCÊ CONSEGUIU!", "RUMO AO CARNAVAL!"),
-                "DERROTA": (VERMELHO, "TEMPO ESGOTADO!", "Mais um ano no CIn..."),
-                "DERROTA_OBSTACULO": (VERMELHO, "GAME OVER!", "Você não sobreviveu à multidão.")
-            }
-            cor, mensagem_principal, mensagem_secundaria = mensagens_fim[estado_jogo]
-            tempo_a_exibir = tempo_total_corrida if estado_jogo == "VITORIA" else None
-            exibir_tela_final(tela, cor, mensagem_principal, mensagem_secundaria, recursos_visuais['fontes'], estado_som['rect_menu'], estado_som['som_mutado'], tempo_partida=tempo_a_exibir)
+        elif estado_jogo == "DERROTA": # Quando o tempo acaba
+            # APENAS desenha a sua nova imagem de derrota por tempo
+            tela.blit(recursos_visuais['fundo_derrota_tempo'], (0, 0))
+            # E o texto para voltar
+            posicao_mouse = pygame.mouse.get_pos()
+            botao_reiniciar.atualizar_feedback(posicao_mouse)
+            botao_reiniciar.desenhar(tela)
+        elif estado_jogo == "DERROTA_OBSTACULO": # Quando colide com a La Ursa
+            # APENAS desenha a sua nova imagem de derrota pela La Ursa
+            tela.blit(recursos_visuais['fundo_derrota_laursa'], (0, 0))
+            # E o texto para voltar
+            posicao_mouse = pygame.mouse.get_pos()
+            botao_reiniciar.atualizar_feedback(posicao_mouse)
+            botao_reiniciar.desenhar(tela)       
 
         elif estado_jogo == "JOGANDO":
             professor = elementos_fase['professor']

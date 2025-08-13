@@ -62,6 +62,7 @@ DIRETORIO_ASSETS = os.path.join(DIRETORIO_RAIZ, 'assets')
 DIRETORIO_IMAGENS = os.path.join(DIRETORIO_ASSETS, 'imagens')
 DIRETORIO_SONS = os.path.join(DIRETORIO_ASSETS, 'sons')
 DIRETORIO_FONTES = os.path.join(DIRETORIO_ASSETS, 'fontes')
+DIRETORIO_SPRITES = os.path.join(DIRETORIO_ASSETS, 'sprites')
 
 # Configuração de Áudio
 VOLUMES_PADRAO = {'musica': 0.6, 'efeitos': 0.7, 'passos': 0.5}
