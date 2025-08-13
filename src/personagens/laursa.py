@@ -5,7 +5,11 @@ from src.utils.setup import carregar_animacao
 
 class Laursa(pygame.sprite.Sprite):
     """Representa o obstáculo 'La Ursa' que se move verticalmente como um obstáculo."""
-    def __init__(self, x, y):
+    def __init__(self, x, y, fase):
+        """
+        Inicializa a La Ursa.
+        fase: O número da fase atual, para definir a penalidade de tempo.
+        """
         super().__init__()
         # Define o tamanho do sprite com base no tamanho do bloco do labirinto.
         tamanho_sprite = (TAMANHO_BLOCO, TAMANHO_BLOCO)
@@ -32,6 +36,14 @@ class Laursa(pygame.sprite.Sprite):
         self.movimento_range = 120
         # Armazena a posição Y inicial para calcular o alcance do movimento.
         self.pos_inicial_y = y
+
+        # Define a penalidade de tempo com base na fase atual.
+        if fase == 1:
+            self.penalidade_tempo_ms = 2000  # 2 segundos
+        elif fase == 2:
+            self.penalidade_tempo_ms = 4000  # 4 segundos
+        else:
+            self.penalidade_tempo_ms = 0 # Na fase 3, a colisão é derrota instantânea
 
     def update(self, tempo_atual):
         """Atualiza a posição e a animação da LaUrsa a cada frame."""

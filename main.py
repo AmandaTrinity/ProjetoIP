@@ -167,13 +167,14 @@ def main():
             for item in pygame.sprite.spritecollide(professor, elementos_fase['itens'], False, pygame.sprite.collide_mask):
                 professor.coletar_item(item, elementos_fase['hud_vars'])
             
-            if not professor.invisivel and pygame.sprite.spritecollide(professor, elementos_fase['obstaculos'], False, pygame.sprite.collide_mask):
+            laursas_colididas = pygame.sprite.spritecollide(professor, elementos_fase['obstaculos'], False, pygame.sprite.collide_mask)
+            if not professor.invisivel and laursas_colididas:
+                laursa_atingida = laursas_colididas[0]
                 if fase_atual == 3:
                     canal_musica.stop(); pygame.mixer.Channel(2).stop(); estado_jogo = "DERROTA_OBSTACULO"
                 else:
-                    ponto_referencia_timer_regressivo -= 2000
-                    professor.hitbox.x -= deslocamento_x * professor.velocidade * 4
-                    professor.hitbox.y -= deslocamento_y * professor.velocidade * 4
+                    ponto_referencia_timer_regressivo -= laursa_atingida.penalidade_tempo_ms
+                    professor.hitbox.center = elementos_fase['pos_entrada'].center
             
             if len(professor.itens_coletados) == 3 and not porta_animando and porta_frame_atual == 0:
                 porta_animando = True

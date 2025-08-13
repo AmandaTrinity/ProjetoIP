@@ -37,7 +37,7 @@ def setup_fase(fase, lista_telhados, sons):
     pos_obstaculos = random.sample(pos_validas_para_obstaculos, num_obstaculos)
     obstaculos = pygame.sprite.Group()
     for pos in pos_obstaculos:
-        obstaculos.add(Laursa(pos[0] - TAMANHO_BLOCO // 2, pos[1] - TAMANHO_BLOCO // 2))
+        obstaculos.add(Laursa(pos[0] - TAMANHO_BLOCO // 2, pos[1] - TAMANHO_BLOCO // 2, fase))
 
     # Posiciona os Itens, garantindo que não fiquem sobre os obstáculos
     pos_obstaculos_set = set(pos_obstaculos)
