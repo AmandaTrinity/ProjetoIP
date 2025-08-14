@@ -93,8 +93,6 @@ PROJETO/
 
 ## 🖼️ Galeria do Projeto (Capturas de Tela)
 
-*(Esta seção deve ser preenchida com as imagens do jogo em funcionamento)*
-
 * **Tela Inicial:** Apresentação do jogo e início da aventura.
 
 *![alt text](docs/image.png)*
