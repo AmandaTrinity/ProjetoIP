@@ -53,10 +53,19 @@ def desenhar_hud(tela, hud_vars, professor, fase, tempo_restante, fontes, icones
     if professor.tempo_drunk > tempo_atual:
         desenhar_texto(f"{(professor.tempo_drunk - tempo_atual) / 1000:.1f}s", fontes['mini'], VERMELHO, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, y_icone + 130, True)
 
-    # Tempo restante
-    desenhar_texto("TEMPO", fontes['pequena'], BRANCO, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 280, True)
+    # Contador de Coletáveis
+    coletaveis_coletados = sum([
+        hud_vars.get('sombrinha_coletada', False),
+        hud_vars.get('mascara_coletada', False),
+        hud_vars.get('pitu_coletada', False)
+    ])
+    desenhar_texto("COLETADOS", fontes['pequena'], BRANCO, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 260, True)
+    desenhar_texto(f"{coletaveis_coletados} / 3", fontes['media'], AMARELO, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 295, True)
+
+    # Tempo restante (reposicionado)
+    desenhar_texto("TEMPO", fontes['pequena'], BRANCO, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 350, True)
     cor_tempo = VERMELHO if tempo_restante <= 10 else BRANCO
-    desenhar_texto(f"{int(tempo_restante)}", fontes['grande'], cor_tempo, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 330, True)
+    desenhar_texto(f"{int(tempo_restante)}", fontes['grande'], cor_tempo, superficie_barra_lateral, LARGURA_BARRA_LATERAL / 2, 380, True)
 
     # Caixa de Mensagens
     pygame.draw.rect(superficie_barra_lateral, PRETO, (10, 400, 180, 180))
