@@ -71,8 +71,6 @@ PROJETO/
 │   │   ├── movimento.py       # Movimentação dos personagens no jogo
 │   │   ├── level.py           # Lógica de transição de fase
 │   │   ├── eventos.py         # Processa as teclas de entrada do jogador
-│   ├── personagem.py         # Processa as teclas de entrada do jogador
-│   ├── personagem.py         # Movimentação dos personagens no jogo
 │   ├── personagens/           # Módulo dos personagens do jogo
 │   │   ├── laursa.py           # Definição do personagem LaUrsa
 │   │   ├── professor.py       # Definição do personagem professor
@@ -88,11 +86,10 @@ PROJETO/
 │   
 │── main                   # Arquivo principal do projeto
 │
-│── .gitignore               # Arquivo de configuração do projeto (scripts, etc.)
-│── requierements.txt        # Lista de bibliotecas necessárias
+│── .gitignore               # Arquivo de configuração do projeto (para o git não subir)
+│── requirements.txt        # Lista de bibliotecas necessárias
 │── README.md                # Informações sobre o projeto
 ```
-Adotamos o método **Feature Branch Workflow** no Git. A ramificação `main` foi mantida estável, e cada nova funcionalidade foi desenvolvida em uma ramificação separada (`feature`) para evitar modificações indesejadas no código principal e manter o processo mais organizado.
 
 ## 🖼️ Galeria do Projeto (Capturas de Tela)
 
