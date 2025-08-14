@@ -100,7 +100,7 @@ Adotamos o método **Feature Branch Workflow** no Git. A ramificação `main` fo
 
 * **Tela Inicial:** Apresentação do jogo e início da aventura.
 
-*![alt text](image.png)*
+*![alt text](docs/image.png)*
 
  **MENU:** Aba de MENU com instruções e RANKING.
 
@@ -108,19 +108,19 @@ Adotamos o método **Feature Branch Workflow** no Git. A ramificação `main` fo
 
 * **Gameplay - Fase 1:** O Professor Stefan no labirinto.
 
-*![alt text](image-1.png)*
+*![alt text](docs/image-1.png)*
 * **Tela de Transição 1:** Mensagem exibida entre as fases 1 e 2.
 
-*![alt text](image-2.png)*
+*![alt text](docs/image-2.png)*
 * **Tela de Transição 2:** Mensagem exibida entre as fases 2 e 3.
 
-*![alt text](image-3.png)*
+*![alt text](docs/image-3.png)*
 * **Tela de Derrota (Tempo):** Exibida quando o tempo acaba.
 
-*![alt text](image-4.png)*
+*![alt text](docs/image-4.png)*
 * **Tela de Vitória:** A celebração final ao completar o jogo.
 
-*![alt text](image-5.png)*
+*![alt text](docs/image-5.png)*
 
 ## 🛠️ Ferramentas e Bibliotecas Utilizadas
 
