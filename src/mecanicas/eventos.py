@@ -49,19 +49,27 @@ def processar_eventos(nome_estado_atual, config_audio, botoes=None):
 
         # Eventos de teclado
         if evento.type == pygame.KEYDOWN:
+            # --- Lógica para o menu e popup de confirmação ---
             if nome_estado_atual == "TELA_MENU":
                 if evento.key == pygame.K_ESCAPE:
-                    comandos_usuario['acao'] = 'VOLTAR_MENU' # Fecha o menu
-                elif evento.key == pygame.K_RETURN:
+                    comandos_usuario['acao'] = 'VOLTAR_MENU'
+                elif evento.key == pygame.K_r: # Pede confirmação para resetar
+                    comandos_usuario['acao'] = 'PEDIR_CONFIRMACAO_RESET'
+
+            elif nome_estado_atual == "TELA_MENU_CONFIRMACAO":
+                if evento.key == pygame.K_ESCAPE: # Cancela o reset
+                    comandos_usuario['acao'] = 'CANCELAR_RESET'
+                elif evento.key == pygame.K_RETURN: # Confirma o reset
                     comandos_usuario['acao'] = 'RESETAR_PONTUACAO'
             
-            
-            else: # Lógica para os outros estados
+            # --- Lógica para os outros estados ---
+            else:
                 if evento.key == pygame.K_m:
                     comandos_usuario['som_mutado'] = toggle_mute(comandos_usuario['som_mutado'])
                 elif evento.key == pygame.K_ESCAPE:
                     comandos_usuario['acao'] = 'VOLTAR_MENU'
-                elif evento.key == pygame.K_r and nome_estado_atual == "TELA_INICIAL":
+                # MUDANÇA: Usa ESPAÇO para abrir o menu
+                elif evento.key == pygame.K_SPACE and nome_estado_atual == "TELA_INICIAL":
                     comandos_usuario['acao'] = 'ABRIR_MENU'
                 elif evento.key == pygame.K_RETURN:
                     if nome_estado_atual == "TELA_INICIAL":

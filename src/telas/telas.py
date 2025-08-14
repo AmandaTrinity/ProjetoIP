@@ -1,7 +1,7 @@
 # src/utils/telas.py
 import pygame
 from src.utils.constantes import *
-from src.utils.desenho import desenhar_texto, desenhar_botao_mudo
+from src.utils.desenho import desenhar_texto
 
 def desenhar_tela_inicial(tela, recursos, som_mutado, rect_botao_mudo, botao_iniciar, botao_menu):
     # desenha todos os elementos da tela inicial
@@ -97,3 +97,25 @@ def desenhar_menu_popup(tela, recursos, melhores_tempos):
 
     y_acoes = pos_y + fundo_menu_img.get_height() - 240 # Subi um pouco para não ficar em cima das fitas
     desenhar_texto("(ESC)", recursos['fontes']['mini'], BRANCO, tela, centro_x_menu, y_acoes, True)
+
+def desenhar_popup_confirmacao_reset(tela, recursos):
+    """Desenha o popup de confirmação para resetar o ranking."""
+    # Overlay semitransparente para escurecer o fundo
+    overlay = pygame.Surface((LARGURA_TOTAL, ALTURA_TELA), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 128))  # Fundo preto com 50% de transparência
+    tela.blit(overlay, (0, 0))
+
+    # Caixa do popup
+    largura_popup, altura_popup = 600, 200
+    popup_rect = pygame.Rect(0, 0, largura_popup, altura_popup)
+    popup_rect.center = (LARGURA_TOTAL / 2, ALTURA_TELA / 2)
+    pygame.draw.rect(tela, AZUL_CIN, popup_rect, border_radius=10)
+    pygame.draw.rect(tela, BRANCO, popup_rect, 2, border_radius=10)
+
+    # Textos do popup
+    fontes = recursos['fontes']
+    y_atual = popup_rect.centery - 40
+    desenhar_texto("Você realmente deseja resetar?", fontes['pequena'], AMARELO, tela, popup_rect.centerx, y_atual, True)
+    
+    y_atual += 80
+    desenhar_texto("SIM (ENTER)    NÃO (ESC)", fontes['pequena'], BRANCO, tela, popup_rect.centerx, y_atual, True)

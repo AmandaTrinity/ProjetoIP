@@ -4,7 +4,7 @@ from src.utils.constantes import *
 from src.utils.desenho import desenhar_hud, desenhar_texto
 from src.mecanicas.level import setup_fase
 from src.utils.audio import carregar_sons
-from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_menu_popup
+from src.telas.telas import desenhar_tela_inicial, exibir_tela_final, desenhar_menu_popup, desenhar_popup_confirmacao_reset
 from src.utils.pontuacao import carregar_melhores_tempos, salvar_melhores_tempos
 from src.utils.setup import carregar_recursos_globais
 from src.utils.botao import Botao 
@@ -76,15 +76,14 @@ def main():
 
         if estado_jogo == "TELA_INICIAL":
             botoes_para_passar = {'iniciar': botao_iniciar, 'menu': botao_menu}
-
-        elif estado_jogo == "TELA_MENU":
+        elif estado_jogo in ["TELA_MENU", "TELA_MENU_CONFIRMACAO"]:
             botoes_para_passar = None
         
         elif estado_jogo in ["VITORIA", "DERROTA", "DERROTA_OBSTACULO"]:
             botoes_para_passar = {'reiniciar': botao_reiniciar}
 
         comandos_usuario = processar_eventos(estado_jogo, estado_som, botoes_para_passar)
-        estado_som['som_mutado'] = comandos_usuario['som_mutado']
+        estado_som['som_mutado'] = comandos_usuario.get('som_mutado', estado_som['som_mutado'])
 
         # ATUALIZAÇÃO DE ESTADO BASEADO NOS COMANDOS ---
         acao = comandos_usuario.get('acao')
@@ -93,6 +92,12 @@ def main():
             estado_jogo = "TELA_INICIAL"
 
         elif acao == 'ABRIR_MENU':
+            estado_jogo = "TELA_MENU"
+
+        elif acao == 'PEDIR_CONFIRMACAO_RESET':
+            estado_jogo = "TELA_MENU_CONFIRMACAO"
+
+        elif acao == 'CANCELAR_RESET':
             estado_jogo = "TELA_MENU"
 
         elif acao == 'INICIAR_JOGO':
@@ -109,7 +114,7 @@ def main():
         elif acao == 'RESETAR_PONTUACAO':
             melhores_tempos = [float('inf'), float('inf')]
             salvar_melhores_tempos(melhores_tempos)
-            estado_jogo = "TELA_INICIAL"
+            estado_jogo = "TELA_MENU"
         
         # LÓGICA DE ESTADOS
         if estado_jogo == "TELA_INICIAL":
@@ -117,9 +122,12 @@ def main():
                 canal_musica.play(sons['inicio'], -1)
             desenhar_tela_inicial(tela, recursos_visuais, estado_som['som_mutado'], estado_som['rect_menu'], botao_iniciar, botao_menu)
 
-        elif estado_jogo == "TELA_MENU":
+        elif estado_jogo in ["TELA_MENU", "TELA_MENU_CONFIRMACAO"]:
             tela.blit(recursos_visuais['fundo_tela_inicial'], (0, 0))
             desenhar_menu_popup(tela, recursos_visuais, melhores_tempos)
+            if estado_jogo == "TELA_MENU_CONFIRMACAO":
+                desenhar_popup_confirmacao_reset(tela, recursos_visuais)
+
 
         elif estado_jogo == "TRANSICAO_FASE":
             if fase_atual == 2:
@@ -133,7 +141,7 @@ def main():
                 porta_animando, porta_frame_atual = False, 0
                 estado_jogo = "JOGANDO"
                 
-        if estado_jogo == "VITORIA":
+        elif estado_jogo == "VITORIA":
             tela.blit(recursos_visuais['fundo_vitoria'], (0, 0))
             posicao_mouse = pygame.mouse.get_pos()
             botao_reiniciar.atualizar_feedback(posicao_mouse)
